@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Price Optimizer - Results</title>
+    <!-- Roboto font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2em;
+            font-weight: 600;
+        }
+        
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chart-title {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .chart img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            display: block;
+            cursor: pointer; /* Indicates images are clickable */
+        }
+        
+        /* Fullscreen lightbox overlay */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .chart-full {
+            grid-column: 1 / -1;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .charts {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Menu Price Optimizer - Results</h1>
+        
+        <div class="charts">
+            <div class="chart">
+                <div class="chart-title">Model Performance</div>
+                <img src="static/charts/model_performance.png" alt="Model Performance" onclick="openLightbox(this.src)">
+            </div>
+            
+            <div class="chart">
+                <div class="chart-title">Feature Importance</div>
+                <img src="static/charts/feature_importance.png" alt="Feature Importance" onclick="openLightbox(this.src)">
+            </div>
+            
+            <div class="chart">
+                <div class="chart-title">Predictions vs Actual</div>
+                <img src="static/charts/predictions_vs_actual.png" alt="Predictions vs Actual" onclick="openLightbox(this.src)">
+            </div>
+            
+            <div class="chart">
+                <div class="chart-title">Portfolio Metrics</div>
+                <img src="static/charts/portfolio_metrics.png" alt="Portfolio Metrics" onclick="openLightbox(this.src)">
+            </div>
+            
+            <div class="chart chart-full">
+                <div class="chart-title">Category & Seasonal Analysis</div>
+                <img src="static/charts/category_analysis.png" alt="Category Analysis" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Menu Price Optimizer Model | Seon Sivasathan</p>
+        </div>
+    </div>
+    
+    <!-- Fullscreen lightbox for viewing images -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+    </div>
+    
+    <script>
+        // Open fullscreen view when image is clicked
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close lightbox when clicking outside or on close button
+        function closeLightbox(event) {
+            if (event.target.id === 'lightbox' || event.target.classList.contains('lightbox-close')) {
+                document.getElementById('lightbox').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('lightbox').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
