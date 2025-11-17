@@ -121,7 +121,7 @@ model = RandomForestRegressor(
 - 7-day rolling average
 - 30-day rolling average
 
-**Behavioral Features:**
+**Behavioural Features:**
 - Event type (wedding, corporate, birthday)
 - Historical ordering patterns
 - Customer segment
@@ -173,7 +173,7 @@ for i in range(10000):
 - CPI Inflation: 2.4%
 - All currency in CAD
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 ```bash
