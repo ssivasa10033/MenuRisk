@@ -454,7 +454,7 @@ Contributions welcome!
 ## Author
 
 **Seon Sivasathan**
-- Computer Science @ Western University (Class of 2027)
+- Computer Science @ Western University 
 - Financial Risk Analyst @ Divine Cuisine
 - LinkedIn: [linkedin.com/in/seon-sivasathan](https://www.linkedin.com/in/seon-sivasathan)
 
@@ -481,4 +481,4 @@ MIT License - Free for commercial and personal use
 
 ---
 
-**Disclaimer**: This tool provides quantitative insights but should complement—not replace—domain expertise, customer feedback, and operational considerations in menu decisions.
+**Disclaimer**: This tool provides quantitative insights to inform decision-making. Results should be validated against real-world conditions, business context, and professional judgment before implementation.
