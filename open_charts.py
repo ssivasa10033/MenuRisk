@@ -3,7 +3,6 @@
 Open all chart PNG files in Preview (macOS default image viewer)
 """
 
-import os
 import subprocess
 from pathlib import Path
 
@@ -38,4 +37,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

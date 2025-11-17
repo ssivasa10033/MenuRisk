@@ -2,15 +2,13 @@
 """
 Open visualizations in default browser
 Creates an HTML viewer and opens it automatically
-
 Author: Seon Sivasathan
 Institution: Computer Science @ Western University
 """
-
-import os
 import webbrowser
 import sys
 from pathlib import Path
+from urllib.request import pathname2url
 
 def main():
     """Open visualizations in browser"""
@@ -37,8 +35,8 @@ def main():
         print("Please run visualize_results.py first to generate charts.")
         sys.exit(1)
     
-    # Convert to file:// URL
-    html_url = f"file://{html_file}"
+    # Convert to file:// URL (cross-platform)
+    html_url = f"file:///{pathname2url(str(html_file))}"
     
     print("=" * 60)
     print("Opening visualizations in browser...")
@@ -57,7 +55,5 @@ def main():
         print(f"\n✗ Error opening browser: {e}")
         print(f"\nPlease manually open: {html_file}")
 
-
 if __name__ == '__main__':
     main()
-
