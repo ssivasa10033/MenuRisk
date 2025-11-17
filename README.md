@@ -55,7 +55,7 @@ Combines quantitative risk metrics with ML predictions to categorize items:
 - **NumPy** - Numerical computing and matrix operations
 - **SciPy** - Statistical functions and optimization
 
-### Financial Modeling
+### Financial Modelling
 - **Modern Portfolio Theory** - Markowitz mean-variance optimization
 - **Sharpe Ratio** - Risk-adjusted performance measurement
 - **Correlation Analysis** - Portfolio diversification metrics
@@ -428,7 +428,7 @@ gunicorn>=21.2.0    # Production server
 
 ## Contributing
 
-Contributions welcome! Areas for enhancement:
+Contributions welcome! 
 
 **Finance/Quantitative:**
 - Modern Portfolio Theory optimization
@@ -458,8 +458,6 @@ Contributions welcome! Areas for enhancement:
 - Financial Risk Analyst @ Divine Cuisine
 - LinkedIn: [linkedin.com/in/seon-sivasathan](https://www.linkedin.com/in/seon-sivasathan)
 
-*Combining quantitative finance and machine learning for data-driven business optimization.*
-
 ## License
 
 MIT License - Free for commercial and personal use
@@ -480,43 +478,6 @@ MIT License - Free for commercial and personal use
 - Flask micro-framework
 - pandas for data analysis
 - Matplotlib/Seaborn for visualization
-
-## Contact
-
-Questions or collaboration? Connect on [LinkedIn](https://www.linkedin.com/in/seon-sivasathan) 
-
----
-
-## 🎓 Educational Value
-
-This project demonstrates:
-
-**Financial Analysis**
-- Portfolio theory application
-- Risk-return analysis
-- Sharpe ratio calculations
-- Diversification principles
-- Stochastic modeling
-
-**Machine Learning:**
-- Supervised learning (regression)
-- Ensemble methods (Random Forest)
-- Feature engineering
-- Cross-validation
-- Model evaluation
-
-**Software Engineering:**
-- Full-stack web development
-- Modular code architecture
-- Data pipeline design
-- Production deployment
-- Version control
-
-**Domain Knowledge:**
-- Restaurant/catering operations
-- Canadian business environment
-- Financial metrics
-- Predictive analytics
 
 ---
 
