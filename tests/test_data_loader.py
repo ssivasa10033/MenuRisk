@@ -25,7 +25,7 @@ class TestDataLoader:
 
     def test_load_csv(self, sample_data):
         """Test loading data from CSV file."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             sample_data.to_csv(f.name, index=False)
             filepath = f.name
 
@@ -41,15 +41,17 @@ class TestDataLoader:
     def test_load_missing_file(self, data_loader):
         """Test loading non-existent file raises error."""
         with pytest.raises(DataLoaderError):
-            data_loader.load_csv('/nonexistent/path/data.csv')
+            data_loader.load_csv("/nonexistent/path/data.csv")
 
     def test_validate_missing_columns(self, data_loader):
         """Test validation catches missing required columns."""
-        incomplete_data = pd.DataFrame({
-            'item_name': ['A', 'B'],
-            'current_price': [10, 20]
-            # Missing: cogs, quantity_sold
-        })
+        incomplete_data = pd.DataFrame(
+            {
+                "item_name": ["A", "B"],
+                "current_price": [10, 20],
+                # Missing: cogs, quantity_sold
+            }
+        )
 
         with pytest.raises(InvalidDataError):
             data_loader.load_dataframe(incomplete_data)
@@ -59,21 +61,21 @@ class TestDataLoader:
         data_loader.load_dataframe(sample_data)
         summary = data_loader.get_summary()
 
-        assert 'rows' in summary
-        assert 'columns' in summary
-        assert 'required_present' in summary
-        assert summary['rows'] == len(sample_data)
+        assert "rows" in summary
+        assert "columns" in summary
+        assert "required_present" in summary
+        assert summary["rows"] == len(sample_data)
 
     def test_generate_sample_data(self):
         """Test sample data generation."""
         data = DataLoader.generate_sample_data(n_samples=100)
 
         assert len(data) == 100
-        assert 'item_name' in data.columns
-        assert 'current_price' in data.columns
-        assert 'cogs' in data.columns
-        assert 'quantity_sold' in data.columns
-        assert np.all(data['current_price'] > data['cogs'])
+        assert "item_name" in data.columns
+        assert "current_price" in data.columns
+        assert "cogs" in data.columns
+        assert "quantity_sold" in data.columns
+        assert np.all(data["current_price"] > data["cogs"])
 
 
 class TestDataPreprocessor:
@@ -94,12 +96,14 @@ class TestDataPreprocessor:
     def test_prepare_features_insufficient_data(self):
         """Test feature preparation with insufficient data."""
         preprocessor = DataPreprocessor(min_samples=10)
-        small_data = pd.DataFrame({
-            'item_name': ['A', 'B', 'C'],
-            'current_price': [10, 20, 30],
-            'cogs': [5, 10, 15],
-            'quantity_sold': [100, 200, 300]
-        })
+        small_data = pd.DataFrame(
+            {
+                "item_name": ["A", "B", "C"],
+                "current_price": [10, 20, 30],
+                "cogs": [5, 10, 15],
+                "quantity_sold": [100, 200, 300],
+            }
+        )
 
         with pytest.raises(InsufficientDataError):
             preprocessor.prepare_features(small_data)
@@ -121,7 +125,7 @@ class TestDataPreprocessor:
         """Test handling of zero COGS values."""
         preprocessor = DataPreprocessor()
         data_with_zero = sample_data.copy()
-        data_with_zero.loc[0, 'cogs'] = 0
+        data_with_zero.loc[0, "cogs"] = 0
 
         X, y, _ = preprocessor.prepare_features(data_with_zero)
 
@@ -133,7 +137,7 @@ class TestDataPreprocessor:
         """Test handling of negative values."""
         preprocessor = DataPreprocessor()
         data_with_negative = sample_data.copy()
-        data_with_negative.loc[0, 'quantity_sold'] = -10
+        data_with_negative.loc[0, "quantity_sold"] = -10
 
         X, y, _ = preprocessor.prepare_features(data_with_negative)
 
@@ -146,7 +150,7 @@ class TestDataPreprocessor:
         X, y, feature_names = preprocessor.prepare_features(sample_data)
 
         # Should have category features
-        category_features = [f for f in feature_names if f.startswith('category_')]
+        category_features = [f for f in feature_names if f.startswith("category_")]
         assert len(category_features) > 0
 
     def test_season_factor(self, sample_data):
@@ -154,11 +158,11 @@ class TestDataPreprocessor:
         preprocessor = DataPreprocessor()
         X, y, feature_names = preprocessor.prepare_features(sample_data)
 
-        assert 'season_factor' in feature_names
+        assert "season_factor" in feature_names
 
     def test_tax_rate_feature(self, sample_data):
         """Test tax rate feature from province."""
         preprocessor = DataPreprocessor()
         X, y, feature_names = preprocessor.prepare_features(sample_data)
 
-        assert 'tax_rate' in feature_names
+        assert "tax_rate" in feature_names

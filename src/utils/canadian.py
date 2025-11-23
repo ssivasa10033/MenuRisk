@@ -12,43 +12,43 @@ from typing import Optional, List
 
 # Canadian Tax Rates by Province (2025)
 TAX_RATES = {
-    'ON': 0.13,      # HST (Harmonized Sales Tax)
-    'BC': 0.12,      # GST (5%) + PST (7%)
-    'AB': 0.05,      # GST only
-    'QC': 0.14975,   # GST (5%) + QST (9.975%)
-    'SK': 0.11,      # GST (5%) + PST (6%)
-    'MB': 0.12,      # GST (5%) + PST (7%)
-    'NB': 0.15,      # HST
-    'NS': 0.15,      # HST
-    'PE': 0.15,      # HST
-    'NL': 0.15,      # HST
-    'YT': 0.05,      # GST only
-    'NT': 0.05,      # GST only
-    'NU': 0.05,      # GST only
+    "ON": 0.13,  # HST (Harmonized Sales Tax)
+    "BC": 0.12,  # GST (5%) + PST (7%)
+    "AB": 0.05,  # GST only
+    "QC": 0.14975,  # GST (5%) + QST (9.975%)
+    "SK": 0.11,  # GST (5%) + PST (6%)
+    "MB": 0.12,  # GST (5%) + PST (7%)
+    "NB": 0.15,  # HST
+    "NS": 0.15,  # HST
+    "PE": 0.15,  # HST
+    "NL": 0.15,  # HST
+    "YT": 0.05,  # GST only
+    "NT": 0.05,  # GST only
+    "NU": 0.05,  # GST only
 }
 
 # Seasonal Factors for Canadian Climate
 SEASONAL_FACTORS = {
-    'Winter': 0.75,   # Dec-Feb: Reduced outdoor events
-    'Spring': 1.0,    # Mar-May: Normal
-    'Summer': 1.35,   # Jun-Aug: Peak wedding/event season
-    'Fall': 0.95      # Sep-Nov: Slightly below normal
+    "Winter": 0.75,  # Dec-Feb: Reduced outdoor events
+    "Spring": 1.0,  # Mar-May: Normal
+    "Summer": 1.35,  # Jun-Aug: Peak wedding/event season
+    "Fall": 0.95,  # Sep-Nov: Slightly below normal
 }
 
 # Canadian Holidays (2025)
 CANADIAN_HOLIDAYS = [
-    '01-01',  # New Year's Day
-    '02-17',  # Family Day (varies by province)
-    '03-29',  # Good Friday 2025
-    '04-01',  # Easter Monday 2025
-    '05-19',  # Victoria Day 2025
-    '07-01',  # Canada Day
-    '08-04',  # Civic Holiday
-    '09-01',  # Labour Day 2025
-    '10-13',  # Thanksgiving 2025
-    '11-11',  # Remembrance Day
-    '12-25',  # Christmas
-    '12-26',  # Boxing Day
+    "01-01",  # New Year's Day
+    "02-17",  # Family Day (varies by province)
+    "03-29",  # Good Friday 2025
+    "04-01",  # Easter Monday 2025
+    "05-19",  # Victoria Day 2025
+    "07-01",  # Canada Day
+    "08-04",  # Civic Holiday
+    "09-01",  # Labour Day 2025
+    "10-13",  # Thanksgiving 2025
+    "11-11",  # Remembrance Day
+    "12-25",  # Christmas
+    "12-26",  # Boxing Day
 ]
 
 
@@ -104,9 +104,7 @@ def is_holiday(date_str: str) -> bool:
 
 
 def calculate_net_revenue(
-    gross_revenue: float,
-    province: str,
-    season: Optional[str] = None
+    gross_revenue: float, province: str, season: Optional[str] = None
 ) -> float:
     """
     Calculate net revenue after tax and seasonal adjustment.

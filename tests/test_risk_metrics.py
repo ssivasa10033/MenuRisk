@@ -15,9 +15,7 @@ class TestPortfolioAnalyzer:
     def analyzer(self):
         """Provide a PortfolioAnalyzer instance."""
         return PortfolioAnalyzer(
-            risk_free_rate=0.0225,
-            keep_threshold=1.5,
-            monitor_threshold=0.8
+            risk_free_rate=0.0225, keep_threshold=1.5, monitor_threshold=0.8
         )
 
     def test_calculate_sharpe_ratio(self, analyzer):
@@ -39,22 +37,22 @@ class TestPortfolioAnalyzer:
         """Test portfolio metrics calculation."""
         metrics = analyzer.calculate_portfolio_metrics(sample_data)
 
-        assert 'mean_return' in metrics
-        assert 'volatility' in metrics
-        assert 'sharpe_ratio' in metrics
-        assert 'recommendations' in metrics
-        assert 'num_items' in metrics
+        assert "mean_return" in metrics
+        assert "volatility" in metrics
+        assert "sharpe_ratio" in metrics
+        assert "recommendations" in metrics
+        assert "num_items" in metrics
 
-        assert isinstance(metrics['mean_return'], float)
-        assert isinstance(metrics['volatility'], float)
-        assert metrics['num_items'] == len(sample_data)
+        assert isinstance(metrics["mean_return"], float)
+        assert isinstance(metrics["volatility"], float)
+        assert metrics["num_items"] == len(sample_data)
 
     def test_recommendations_validity(self, analyzer, sample_data):
         """Test recommendation values are valid."""
         metrics = analyzer.calculate_portfolio_metrics(sample_data)
-        recommendations = metrics['recommendations']
+        recommendations = metrics["recommendations"]
 
-        valid_recs = {'keep', 'monitor', 'remove'}
+        valid_recs = {"keep", "monitor", "remove"}
         for rec in recommendations.values():
             assert rec in valid_recs
 
@@ -78,7 +76,7 @@ class TestPortfolioAnalyzer:
         returns = np.array([0.1, 0.15, 0.12, 0.08, 0.11])  # All positive
         sortino = analyzer.calculate_sortino_ratio(returns)
 
-        assert sortino == float('inf')
+        assert sortino == float("inf")
 
     def test_efficient_frontier_points(self, analyzer):
         """Test efficient frontier calculation."""
@@ -91,10 +89,7 @@ class TestPortfolioAnalyzer:
 
     def test_custom_thresholds(self):
         """Test custom threshold settings."""
-        analyzer = PortfolioAnalyzer(
-            keep_threshold=2.0,
-            monitor_threshold=1.0
-        )
+        analyzer = PortfolioAnalyzer(keep_threshold=2.0, monitor_threshold=1.0)
 
         assert analyzer.keep_threshold == 2.0
         assert analyzer.monitor_threshold == 1.0

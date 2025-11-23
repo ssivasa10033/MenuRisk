@@ -36,7 +36,7 @@ class PortfolioAnalyzer:
         self,
         risk_free_rate: float = DEFAULT_RISK_FREE_RATE,
         keep_threshold: float = DEFAULT_KEEP_THRESHOLD,
-        monitor_threshold: float = DEFAULT_MONITOR_THRESHOLD
+        monitor_threshold: float = DEFAULT_MONITOR_THRESHOLD,
     ):
         """
         Initialize the portfolio analyzer.
@@ -51,9 +51,7 @@ class PortfolioAnalyzer:
         self.monitor_threshold = monitor_threshold
 
     def calculate_sharpe_ratio(
-        self,
-        returns: np.ndarray,
-        risk_free_rate: Optional[float] = None
+        self, returns: np.ndarray, risk_free_rate: Optional[float] = None
     ) -> float:
         """
         Calculate the Sharpe ratio.
@@ -78,10 +76,7 @@ class PortfolioAnalyzer:
         sharpe = (mean_return - rf) / volatility
         return float(sharpe)
 
-    def calculate_portfolio_metrics(
-        self,
-        df: pd.DataFrame
-    ) -> Dict:
+    def calculate_portfolio_metrics(self, df: pd.DataFrame) -> Dict:
         """
         Calculate comprehensive portfolio metrics.
 
@@ -101,16 +96,14 @@ class PortfolioAnalyzer:
         df = df.copy()
 
         # Calculate profit margins
-        df['revenue'] = df['current_price'] * df['quantity_sold']
-        df['profit'] = df['revenue'] - (df['cogs'] * df['quantity_sold'])
-        df['profit_margin'] = np.where(
-            df['cogs'] > 0,
-            (df['current_price'] - df['cogs']) / df['cogs'],
-            0
+        df["revenue"] = df["current_price"] * df["quantity_sold"]
+        df["profit"] = df["revenue"] - (df["cogs"] * df["quantity_sold"])
+        df["profit_margin"] = np.where(
+            df["cogs"] > 0, (df["current_price"] - df["cogs"]) / df["cogs"], 0
         )
 
         # Get valid returns
-        returns = df['profit_margin'].values
+        returns = df["profit_margin"].values
         returns = returns[~np.isnan(returns)]
         returns = returns[returns != np.inf]
         returns = returns[returns > -1]
@@ -133,17 +126,15 @@ class PortfolioAnalyzer:
         recommendations = self._generate_recommendations(df, volatility)
 
         return {
-            'mean_return': mean_return,
-            'volatility': volatility,
-            'sharpe_ratio': sharpe_ratio,
-            'recommendations': recommendations,
-            'num_items': len(df)
+            "mean_return": mean_return,
+            "volatility": volatility,
+            "sharpe_ratio": sharpe_ratio,
+            "recommendations": recommendations,
+            "num_items": len(df),
         }
 
     def _generate_recommendations(
-        self,
-        df: pd.DataFrame,
-        portfolio_volatility: float
+        self, df: pd.DataFrame, portfolio_volatility: float
     ) -> Dict[str, str]:
         """
         Generate recommendations for each menu item.
@@ -158,12 +149,12 @@ class PortfolioAnalyzer:
         recommendations = {}
 
         for idx, row in df.iterrows():
-            item_name = row.get('item_name', f'item_{idx}')
-            item_return = row['profit_margin']
+            item_name = row.get("item_name", f"item_{idx}")
+            item_return = row["profit_margin"]
 
             # Handle invalid returns
             if np.isnan(item_return) or item_return == np.inf or item_return < -1:
-                recommendations[item_name] = 'remove'
+                recommendations[item_name] = "remove"
                 continue
 
             # Calculate item Sharpe using portfolio volatility
@@ -174,28 +165,26 @@ class PortfolioAnalyzer:
 
             # Apply thresholds
             if item_sharpe >= self.keep_threshold:
-                recommendations[item_name] = 'keep'
+                recommendations[item_name] = "keep"
             elif item_sharpe >= self.monitor_threshold:
-                recommendations[item_name] = 'monitor'
+                recommendations[item_name] = "monitor"
             else:
-                recommendations[item_name] = 'remove'
+                recommendations[item_name] = "remove"
 
         return recommendations
 
     def _empty_metrics(self) -> Dict:
         """Return empty metrics structure."""
         return {
-            'mean_return': 0.0,
-            'volatility': 0.0,
-            'sharpe_ratio': 0.0,
-            'recommendations': {},
-            'num_items': 0
+            "mean_return": 0.0,
+            "volatility": 0.0,
+            "sharpe_ratio": 0.0,
+            "recommendations": {},
+            "num_items": 0,
         }
 
     def calculate_var(
-        self,
-        returns: np.ndarray,
-        confidence_level: float = 0.95
+        self, returns: np.ndarray, confidence_level: float = 0.95
     ) -> float:
         """
         Calculate Value at Risk (VaR).
@@ -215,9 +204,7 @@ class PortfolioAnalyzer:
         return float(var)
 
     def calculate_sortino_ratio(
-        self,
-        returns: np.ndarray,
-        risk_free_rate: Optional[float] = None
+        self, returns: np.ndarray, risk_free_rate: Optional[float] = None
     ) -> float:
         """
         Calculate the Sortino ratio (downside risk-adjusted return).
@@ -236,19 +223,17 @@ class PortfolioAnalyzer:
         # Calculate downside deviation (only negative returns)
         negative_returns = returns[returns < rf]
         if len(negative_returns) == 0:
-            return float('inf')  # No downside risk
+            return float("inf")  # No downside risk
 
         downside_std = np.std(negative_returns, ddof=1)
         if downside_std == 0:
-            return float('inf')
+            return float("inf")
 
         sortino = (mean_return - rf) / downside_std
         return float(sortino)
 
     def get_efficient_frontier_points(
-        self,
-        returns: np.ndarray,
-        n_points: int = 100
+        self, returns: np.ndarray, n_points: int = 100
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Calculate efficient frontier points (simplified for single-asset analysis).
@@ -266,16 +251,13 @@ class PortfolioAnalyzer:
         volatility = np.std(returns, ddof=1)
 
         # Generate points around the current portfolio
-        vol_range = np.linspace(
-            max(0, volatility * 0.5),
-            volatility * 1.5,
-            n_points
-        )
+        vol_range = np.linspace(max(0, volatility * 0.5), volatility * 1.5, n_points)
 
         # Simplified: assume linear risk-return relationship
         return_range = self.risk_free_rate + (
             (mean_return - self.risk_free_rate) / volatility * vol_range
-            if volatility > 0 else np.full(n_points, mean_return)
+            if volatility > 0
+            else np.full(n_points, mean_return)
         )
 
         return vol_range, return_range

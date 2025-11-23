@@ -25,11 +25,13 @@ logger = logging.getLogger(__name__)
 
 class ModelError(Exception):
     """Base exception for model errors."""
+
     pass
 
 
 class ModelNotTrainedError(ModelError):
     """Raised when trying to predict without training."""
+
     pass
 
 
@@ -57,7 +59,7 @@ class MenuPriceOptimizer:
         max_depth: int = 10,
         min_samples_split: int = 5,
         random_state: int = 42,
-        risk_free_rate: float = 0.0225
+        risk_free_rate: float = 0.0225,
     ):
         """
         Initialize the optimizer.
@@ -76,7 +78,7 @@ class MenuPriceOptimizer:
             max_depth=max_depth,
             min_samples_split=min_samples_split,
             random_state=random_state,
-            n_jobs=-1
+            n_jobs=-1,
         )
 
         self.preprocessor = DataPreprocessor()
@@ -91,11 +93,7 @@ class MenuPriceOptimizer:
 
         logger.info("Model initialized successfully")
 
-    def train(
-        self,
-        df: pd.DataFrame,
-        test_size: float = 0.2
-    ) -> Dict:
+    def train(self, df: pd.DataFrame, test_size: float = 0.2) -> Dict:
         """
         Train the model on menu data.
 
@@ -129,9 +127,7 @@ class MenuPriceOptimizer:
 
         # Train-test split
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y,
-            test_size=test_size,
-            random_state=self._random_state
+            X, y, test_size=test_size, random_state=self._random_state
         )
 
         logger.info(f"Train: {len(X_train)} samples, Test: {len(X_test)} samples")
@@ -149,30 +145,28 @@ class MenuPriceOptimizer:
         self.rmse_ = float(np.sqrt(mean_squared_error(y_test, y_test_pred)))
 
         # Feature importance
-        self.feature_importance_ = pd.DataFrame({
-            'feature': feature_names,
-            'importance': self.model.feature_importances_
-        }).sort_values('importance', ascending=False)
+        self.feature_importance_ = pd.DataFrame(
+            {"feature": feature_names, "importance": self.model.feature_importances_}
+        ).sort_values("importance", ascending=False)
 
         self.is_trained = True
 
         # Cross-validation
         logger.info("Running cross-validation...")
-        cv_scores = cross_val_score(
-            self.model, X_train, y_train,
-            cv=5, scoring='r2'
-        )
+        cv_scores = cross_val_score(self.model, X_train, y_train, cv=5, scoring="r2")
 
         metrics = {
-            'r2_score': self.r2_score_,
-            'mae': self.mae_,
-            'rmse': self.rmse_,
-            'cv_r2_mean': float(cv_scores.mean()),
-            'cv_r2_std': float(cv_scores.std()),
-            'feature_importance': self.feature_importance_
+            "r2_score": self.r2_score_,
+            "mae": self.mae_,
+            "rmse": self.rmse_,
+            "cv_r2_mean": float(cv_scores.mean()),
+            "cv_r2_std": float(cv_scores.std()),
+            "feature_importance": self.feature_importance_,
         }
 
-        logger.info(f"Training complete. R2: {self.r2_score_:.4f}, MAE: {self.mae_:.4f}")
+        logger.info(
+            f"Training complete. R2: {self.r2_score_:.4f}, MAE: {self.mae_:.4f}"
+        )
 
         return metrics
 
@@ -216,10 +210,7 @@ class MenuPriceOptimizer:
         return self.portfolio_analyzer.calculate_portfolio_metrics(df)
 
     def optimize_prices(
-        self,
-        df: pd.DataFrame,
-        target_sharpe: float = 1.5,
-        min_margin: float = 0.1
+        self, df: pd.DataFrame, target_sharpe: float = 1.5, min_margin: float = 0.1
     ) -> pd.DataFrame:
         """
         Optimize menu prices to achieve target Sharpe ratio.
@@ -248,29 +239,29 @@ class MenuPriceOptimizer:
         optimal_margins = self.predict(df)
 
         # Calculate optimal prices
-        df['optimal_margin'] = optimal_margins
-        df['optimal_price'] = df['cogs'] * (1 + df['optimal_margin'])
+        df["optimal_margin"] = optimal_margins
+        df["optimal_price"] = df["cogs"] * (1 + df["optimal_margin"])
 
         # Ensure minimum margin
-        min_price = df['cogs'] * (1 + min_margin)
-        df['optimal_price'] = np.maximum(df['optimal_price'], min_price)
+        min_price = df["cogs"] * (1 + min_margin)
+        df["optimal_price"] = np.maximum(df["optimal_price"], min_price)
 
         # Handle invalid prices
-        df['optimal_price'] = np.where(
-            (df['optimal_price'] > 0) & (df['cogs'] > 0),
-            df['optimal_price'],
-            df['cogs'] * (1 + min_margin * 2)
+        df["optimal_price"] = np.where(
+            (df["optimal_price"] > 0) & (df["cogs"] > 0),
+            df["optimal_price"],
+            df["cogs"] * (1 + min_margin * 2),
         )
 
         # Calculate price change
-        df['price_change'] = df['optimal_price'] - df['current_price']
-        df['price_change_pct'] = np.where(
-            df['current_price'] > 0,
-            (df['price_change'] / df['current_price']) * 100,
-            0
+        df["price_change"] = df["optimal_price"] - df["current_price"]
+        df["price_change_pct"] = np.where(
+            df["current_price"] > 0, (df["price_change"] / df["current_price"]) * 100, 0
         )
 
-        logger.info(f"Optimization complete. Avg change: {df['price_change_pct'].mean():.2f}%")
+        logger.info(
+            f"Optimization complete. Avg change: {df['price_change_pct'].mean():.2f}%"
+        )
 
         return df
 
@@ -284,8 +275,8 @@ class MenuPriceOptimizer:
             return {"error": "Model not trained"}
 
         return {
-            'r2_score': self.r2_score_,
-            'mae': self.mae_,
-            'rmse': self.rmse_,
-            'is_trained': self.is_trained
+            "r2_score": self.r2_score_,
+            "mae": self.mae_,
+            "rmse": self.rmse_,
+            "is_trained": self.is_trained,
         }

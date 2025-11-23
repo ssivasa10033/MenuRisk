@@ -19,11 +19,13 @@ logger = logging.getLogger(__name__)
 
 class DataLoaderError(Exception):
     """Base exception for data loading errors."""
+
     pass
 
 
 class InvalidDataError(DataLoaderError):
     """Raised when data validation fails."""
+
     pass
 
 
@@ -35,19 +37,15 @@ class DataLoader:
     prices, costs, quantities, and optional categorical data.
     """
 
-    REQUIRED_COLUMNS = ['item_name', 'current_price', 'cogs', 'quantity_sold']
-    OPTIONAL_COLUMNS = ['category', 'season', 'province', 'date', 'event_type']
+    REQUIRED_COLUMNS = ["item_name", "current_price", "cogs", "quantity_sold"]
+    OPTIONAL_COLUMNS = ["category", "season", "province", "date", "event_type"]
 
     def __init__(self):
         """Initialize the DataLoader."""
         self.data: Optional[pd.DataFrame] = None
         self._validation_errors: List[str] = []
 
-    def load_csv(
-        self,
-        filepath: str,
-        validate: bool = True
-    ) -> pd.DataFrame:
+    def load_csv(self, filepath: str, validate: bool = True) -> pd.DataFrame:
         """
         Load menu data from a CSV file.
 
@@ -82,11 +80,7 @@ class DataLoader:
         except pd.errors.ParserError as e:
             raise DataLoaderError(f"CSV parsing error: {e}")
 
-    def load_dataframe(
-        self,
-        df: pd.DataFrame,
-        validate: bool = True
-    ) -> pd.DataFrame:
+    def load_dataframe(self, df: pd.DataFrame, validate: bool = True) -> pd.DataFrame:
         """
         Load data from an existing DataFrame.
 
@@ -118,8 +112,7 @@ class DataLoader:
             raise InvalidDataError("No data loaded")
 
         missing_cols = [
-            col for col in self.REQUIRED_COLUMNS
-            if col not in self.data.columns
+            col for col in self.REQUIRED_COLUMNS if col not in self.data.columns
         ]
 
         if missing_cols:
@@ -129,11 +122,11 @@ class DataLoader:
             )
 
         # Check for numeric columns
-        numeric_cols = ['current_price', 'cogs', 'quantity_sold']
+        numeric_cols = ["current_price", "cogs", "quantity_sold"]
         for col in numeric_cols:
             if not pd.api.types.is_numeric_dtype(self.data[col]):
                 try:
-                    self.data[col] = pd.to_numeric(self.data[col], errors='coerce')
+                    self.data[col] = pd.to_numeric(self.data[col], errors="coerce")
                     logger.warning(f"Converted {col} to numeric type")
                 except Exception:
                     raise InvalidDataError(f"Column '{col}' must be numeric")
@@ -164,10 +157,7 @@ class DataLoader:
         }
 
     @staticmethod
-    def generate_sample_data(
-        n_samples: int = 200,
-        seed: int = 42
-    ) -> pd.DataFrame:
+    def generate_sample_data(n_samples: int = 200, seed: int = 42) -> pd.DataFrame:
         """
         Generate sample menu data for testing.
 
@@ -185,20 +175,20 @@ class DataLoader:
         markup = np.random.uniform(1.2, 2.5, n_samples)
         current_price = cogs * markup
 
-        data = pd.DataFrame({
-            'item_name': [f'Item_{i}' for i in range(n_samples)],
-            'current_price': current_price,
-            'cogs': cogs,
-            'quantity_sold': np.random.randint(10, 200, n_samples),
-            'category': np.random.choice(
-                ['Appetizer', 'Main', 'Dessert', 'Beverage'], n_samples
-            ),
-            'season': np.random.choice(
-                ['Winter', 'Spring', 'Summer', 'Fall'], n_samples
-            ),
-            'province': np.random.choice(
-                ['ON', 'BC', 'AB', 'QC'], n_samples
-            )
-        })
+        data = pd.DataFrame(
+            {
+                "item_name": [f"Item_{i}" for i in range(n_samples)],
+                "current_price": current_price,
+                "cogs": cogs,
+                "quantity_sold": np.random.randint(10, 200, n_samples),
+                "category": np.random.choice(
+                    ["Appetizer", "Main", "Dessert", "Beverage"], n_samples
+                ),
+                "season": np.random.choice(
+                    ["Winter", "Spring", "Summer", "Fall"], n_samples
+                ),
+                "province": np.random.choice(["ON", "BC", "AB", "QC"], n_samples),
+            }
+        )
 
         return data
