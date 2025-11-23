@@ -189,14 +189,21 @@ git clone https://github.com/yourusername/menu-portfolio-optimizer.git
 cd menu-portfolio-optimizer
 ```
 
-2. **Install Dependencies**
+2. **Install Package**
 ```bash
+# Install with all dependencies
+pip install -e .
+
+# Or install with development dependencies
+pip install -e ".[dev]"
+
+# Or use requirements.txt
 pip install -r requirements.txt
 ```
 
-3. **Generate Sample Data**
+3. **Run Tests**
 ```bash
-python generate_sample_data.py
+pytest
 ```
 
 4. **Run Application**
@@ -209,21 +216,43 @@ python app.py
 http://localhost:5000
 ```
 
+### Production Deployment
+```bash
+# Install production dependencies
+pip install -e ".[production]"
+
+# Run with gunicorn
+gunicorn app:app
+```
+
 ## Data Format
 
 ### Required Columns
 ```csv
-menu_item,date,quantity_sold,revenue_per_unit_cad,cogs_per_unit_cad
-Butter Chicken,2025-06-15,45,18.99,7.50
-Samosas,2025-06-15,120,4.99,1.50
+item_name,current_price,cogs,quantity_sold
+Butter Chicken,18.99,7.50,45
+Samosas (6pc),4.99,1.50,120
+Mango Lassi,3.99,1.20,80
 ```
 
 ### Optional Columns
 ```csv
-event_type,province
-Wedding,ON
-Corporate,BC
+category,season,province
+Main,Summer,ON
+Appetizer,Summer,ON
+Beverage,Summer,BC
 ```
+
+### Column Descriptions
+| Column | Type | Description |
+|--------|------|-------------|
+| `item_name` | String | Name of the menu item |
+| `current_price` | Float | Selling price (CAD) |
+| `cogs` | Float | Cost of Goods Sold (CAD) |
+| `quantity_sold` | Integer | Units sold |
+| `category` | String | Item category (Appetizer, Main, Dessert, Beverage) |
+| `season` | String | Season (Winter, Spring, Summer, Fall) |
+| `province` | String | Canadian province code (ON, BC, AB, QC, etc.) |
 
 
 ### Financial Analysis Workflow
@@ -334,29 +363,46 @@ Where:
 ### Project Structure
 ```
 menu-portfolio-optimizer/
-├── app.py                    # Flask application & routing
-├── config.py                 # Configuration & parameters
+├── app.py                    # Flask application entry point
+├── config.py                 # Configuration & economic parameters
+├── pyproject.toml            # Modern Python packaging
 ├── requirements.txt          # Dependencies
 │
-├── src/
-│   ├── data_loader.py        # CSV processing & validation
-│   ├── risk_calculator.py    # Sharpe ratios, portfolio metrics
-│   ├── ml_predictor.py       # Random Forest training & prediction
-│   ├── recommender.py        # Decision logic & recommendations
-│   ├── canadian_utils.py     # Tax & seasonality functions
-│   └── plotter.py            # Matplotlib/Seaborn visualizations
+├── src/                      # Main source package
+│   ├── __init__.py           # Package exports
+│   ├── data/
+│   │   ├── loader.py         # CSV loading & validation
+│   │   └── preprocessor.py   # Feature engineering & scaling
+│   ├── finance/
+│   │   └── risk_metrics.py   # Sharpe ratios, VaR, portfolio analysis
+│   ├── models/
+│   │   └── optimizer.py      # Random Forest ML model
+│   ├── utils/
+│   │   └── canadian.py       # Tax rates & seasonality
+│   └── visualization/
+│       └── charts.py         # Matplotlib/Seaborn visualizations
+│
+├── tests/                    # Pytest test suite
+│   ├── conftest.py           # Shared fixtures
+│   ├── test_optimizer.py     # Model tests
+│   ├── test_data_loader.py   # Data loading tests
+│   └── test_risk_metrics.py  # Finance metrics tests
+│
+├── templates/                # Flask HTML templates
+│   ├── base.html             # Base template
+│   └── index.html            # Main dashboard
 │
 ├── static/
-│   ├── css/style.css         # Custom styling
 │   └── charts/               # Generated visualizations
 │
-├── templates/
-│   ├── base.html             # Base template
-│   └── index.html            # Main interface
+├── data/
+│   └── template.csv          # CSV upload template
 │
-└── data/
-    ├── sample_data.csv       # Example dataset
-    └── template.csv          # Upload template
+├── .github/
+│   └── workflows/
+│       └── ci.yml            # GitHub Actions CI/CD
+│
+└── uploads/                  # User uploaded files
 ```
 
 ### Key Dependencies

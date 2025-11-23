@@ -54,6 +54,7 @@ data/*.csv
 data/*.xlsx
 data/*.json
 !data/.gitkeep
+!data/template.csv
 
 # Logs
 *.log
@@ -72,17 +73,24 @@ Thumbs.db
 *.temp
 *.bak
 errors.txt
-*.sh
 diagnose_*.py
 build_*.py
 *_INSTRUCTIONS.md
 
-# Generated charts (keep structure but ignore if regenerated)
-# static/charts/*.png
-# Uncomment above if you want to exclude generated charts
+# Generated charts - exclude from version control
+static/charts/*.png
+static/charts/*.jpg
+static/charts/*.svg
+
+# Generated HTML reports
+view_visualizations.html
 
 # Project specific
 menu-portfolio-optimizer/
 uploads/*
 !uploads/.gitkeep
+
+# Keep directory structure
+!static/charts/.gitkeep
+!data/.gitkeep
 
