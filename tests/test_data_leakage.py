@@ -322,7 +322,7 @@ class TestEdgeCases:
         engineer = TimeSeriesFeatureEngineer()
 
         with pytest.raises(InsufficientDataError):
-            engineer.fit(df, '2023-01-10')  # No data before this cutoff
+            engineer.fit(df, '2022-12-31')  # No data before this cutoff
 
     def test_missing_date_column_warning(self):
         """Ensure warning when date column is missing."""

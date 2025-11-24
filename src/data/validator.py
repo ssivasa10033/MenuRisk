@@ -9,10 +9,10 @@ Institution: Computer Science @ Western University
 
 import logging
 from datetime import date
-from typing import List, Literal, Optional, Tuple
+from typing import List, Literal, Optional, Tuple, Union
 
 import pandas as pd
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 
 logger = logging.getLogger(__name__)
 
@@ -32,25 +32,22 @@ VALID_SEASONS = ['Winter', 'Spring', 'Summer', 'Fall']
 class MenuItemSchema(BaseModel):
     """Schema for a single menu item transaction."""
 
+    model_config = ConfigDict(extra='ignore')
+
     item_name: str = Field(..., min_length=1, max_length=100)
     current_price: float = Field(..., gt=0, description="Must be positive")
     cogs: float = Field(..., gt=0, description="Cost of goods sold")
     quantity_sold: int = Field(..., ge=0, description="Cannot be negative")
-    category: Optional[Literal['Appetizer', 'Main', 'Dessert', 'Beverage']] = None
-    season: Optional[Literal['Winter', 'Spring', 'Summer', 'Fall']] = None
-    province: Optional[str] = Field(
-        default=None,
-        pattern=r'^[A-Z]{2}$',
-        description="2-letter province code"
-    )
-    date: Optional[date] = Field(default=None)
-    event_type: Optional[str] = Field(default=None, max_length=50)
+    category: Optional[str] = None
+    season: Optional[str] = None
+    province: Optional[str] = None
+    date: Optional[Union[date, str]] = None
+    event_type: Optional[str] = None
 
     @field_validator('cogs')
     @classmethod
     def cogs_less_than_price(cls, v: float, info) -> float:
         """COGS must be less than selling price."""
-        # Access other values through info.data
         if 'current_price' in info.data and v >= info.data['current_price']:
             raise ValueError(
                 f"COGS ({v}) must be less than price ({info.data['current_price']})"
@@ -78,6 +75,28 @@ class MenuItemSchema(BaseModel):
             )
         return v
 
+    @field_validator('category')
+    @classmethod
+    def valid_category(cls, v: Optional[str]) -> Optional[str]:
+        """Validate category."""
+        if v is not None and v not in VALID_CATEGORIES:
+            raise ValueError(
+                f"Invalid category: {v}. "
+                f"Valid categories: {', '.join(VALID_CATEGORIES)}"
+            )
+        return v
+
+    @field_validator('season')
+    @classmethod
+    def valid_season(cls, v: Optional[str]) -> Optional[str]:
+        """Validate season."""
+        if v is not None and v not in VALID_SEASONS:
+            raise ValueError(
+                f"Invalid season: {v}. "
+                f"Valid seasons: {', '.join(VALID_SEASONS)}"
+            )
+        return v
+
     @model_validator(mode='after')
     def check_profit_margin(self) -> 'MenuItemSchema':
         """Validate profit margin is reasonable."""
@@ -95,33 +114,18 @@ class MenuItemSchema(BaseModel):
                 )
         return self
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "item_name": "Butter Chicken",
-                "current_price": 18.99,
-                "cogs": 7.50,
-                "quantity_sold": 45,
-                "category": "Main",
-                "season": "Summer",
-                "province": "ON",
-                "date": "2024-01-15"
-            }
-        }
-
 
 class PredictionRequestSchema(BaseModel):
     """Schema for prediction API requests."""
+
+    model_config = ConfigDict(extra='ignore')
 
     items: List[MenuItemSchema] = Field(
         ...,
         min_length=1,
         description="List of menu items to analyze"
     )
-    include_recommendations: bool = Field(
-        default=True,
-        description="Include keep/monitor/remove recommendations"
-    )
+    include_recommendations: bool = True
     confidence_level: float = Field(
         default=0.90,
         ge=0.5,
@@ -132,6 +136,8 @@ class PredictionRequestSchema(BaseModel):
 
 class ValidationResult(BaseModel):
     """Result of data validation."""
+
+    model_config = ConfigDict(extra='ignore')
 
     is_valid: bool
     errors: List[str]

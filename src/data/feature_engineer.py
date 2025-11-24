@@ -369,7 +369,9 @@ def create_train_test_split(
     # For test set, we need to transform the full data to get rolling features
     # but only keep the test portion
     full_transformed = feature_engineer.transform(df)
-    test_df = full_transformed[test_mask]
+    # Use .loc with the original index to avoid reindexing warnings
+    test_indices = df.index[test_mask]
+    test_df = full_transformed.loc[full_transformed.index.isin(test_indices)]
 
     # Drop rows with NaN in lag features (first few days)
     train_df = train_df.dropna()
