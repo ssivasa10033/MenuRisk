@@ -493,7 +493,10 @@ Baseline Performance:
         for baseline in ["naive_last_value", "naive_moving_avg", "naive_seasonal"]:
             if baseline in self.results["model"].values:
                 row = self.results[self.results["model"] == baseline].iloc[0]
-                summary += f"  - {baseline}: MAE={row['test_mae']:.4f}, MAPE={row['test_mape']:.2f}%\n"
+                summary += (
+                    f"  - {baseline}: MAE={row['test_mae']:.4f}, "
+                    f"MAPE={row['test_mape']:.2f}%\n"
+                )
 
         summary += "\nAll models beat naive baselines: "
         best_naive_mae = self.results[
