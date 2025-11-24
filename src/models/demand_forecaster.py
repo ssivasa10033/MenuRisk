@@ -21,6 +21,56 @@ from sklearn.model_selection import (
 )
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+
+def mean_absolute_percentage_error(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """
+    Calculate Mean Absolute Percentage Error (MAPE).
+
+    Args:
+        y_true: True values
+        y_pred: Predicted values
+
+    Returns:
+        MAPE value as percentage (0-100)
+    """
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+
+    # Handle zero values by using epsilon
+    epsilon = 1e-10
+    mask = np.abs(y_true) > epsilon
+
+    if not np.any(mask):
+        return 0.0
+
+    mape = np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
+    return float(mape)
+
+
+def directional_accuracy(
+    y_true: np.ndarray, y_pred: np.ndarray, threshold: float = 0.0
+) -> float:
+    """
+    Calculate directional accuracy (% of times prediction captures trend direction).
+
+    Args:
+        y_true: True values
+        y_pred: Predicted values
+        threshold: Threshold for considering direction change
+
+    Returns:
+        Directional accuracy as percentage (0-100)
+    """
+    if len(y_true) < 2:
+        return 0.0
+
+    # Calculate period-over-period changes
+    true_direction = np.diff(y_true) > threshold
+    pred_direction = np.diff(y_pred) > threshold
+
+    accuracy = np.mean(true_direction == pred_direction) * 100
+    return float(accuracy)
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -360,27 +410,107 @@ class DemandForecaster:
         self,
         X_test: np.ndarray,
         y_test: np.ndarray,
+        include_business_metrics: bool = True,
     ) -> Dict[str, float]:
         """
-        Evaluate model on test data.
+        Evaluate model on test data with comprehensive metrics.
 
         Args:
             X_test: Test features
             y_test: Test targets
+            include_business_metrics: Include MAPE and directional accuracy
 
         Returns:
-            Dictionary with evaluation metrics
+            Dictionary with evaluation metrics including:
+            - test_r2: R-squared score
+            - test_mae: Mean Absolute Error
+            - test_rmse: Root Mean Squared Error
+            - test_mape: Mean Absolute Percentage Error (if enabled)
+            - test_directional_accuracy: Directional accuracy % (if enabled)
         """
         if not self.is_trained:
             raise RuntimeError("Model must be trained before evaluation")
 
         predictions = self.predict(X_test)
 
-        return {
+        metrics = {
             "test_r2": r2_score(y_test, predictions),
             "test_mae": mean_absolute_error(y_test, predictions),
             "test_rmse": np.sqrt(mean_squared_error(y_test, predictions)),
         }
+
+        if include_business_metrics:
+            metrics["test_mape"] = mean_absolute_percentage_error(y_test, predictions)
+            metrics["test_directional_accuracy"] = directional_accuracy(
+                y_test, predictions
+            )
+
+        return metrics
+
+    def evaluate_per_item(
+        self,
+        X_test: pd.DataFrame,
+        y_test: pd.Series,
+        item_names: pd.Series,
+    ) -> pd.DataFrame:
+        """
+        Evaluate model performance per item.
+
+        Args:
+            X_test: Test features (DataFrame)
+            y_test: Test targets (Series)
+            item_names: Item names corresponding to test samples
+
+        Returns:
+            DataFrame with per-item metrics (MAE, RMSE, MAPE, R²)
+        """
+        if not self.is_trained:
+            raise RuntimeError("Model must be trained before evaluation")
+
+        predictions = self.predict(X_test)
+
+        # Create DataFrame for analysis
+        results_df = pd.DataFrame(
+            {
+                "item_name": item_names.values,
+                "y_true": y_test.values,
+                "y_pred": predictions,
+                "error": y_test.values - predictions,
+                "abs_error": np.abs(y_test.values - predictions),
+            }
+        )
+
+        # Calculate per-item metrics
+        per_item_metrics = []
+
+        for item in results_df["item_name"].unique():
+            item_data = results_df[results_df["item_name"] == item]
+
+            if len(item_data) < 2:
+                continue
+
+            y_true_item = item_data["y_true"].values
+            y_pred_item = item_data["y_pred"].values
+
+            mae = mean_absolute_error(y_true_item, y_pred_item)
+            rmse = np.sqrt(mean_squared_error(y_true_item, y_pred_item))
+            r2 = r2_score(y_true_item, y_pred_item)
+            mape = mean_absolute_percentage_error(y_true_item, y_pred_item)
+
+            per_item_metrics.append(
+                {
+                    "item_name": item,
+                    "n_samples": len(item_data),
+                    "mae": mae,
+                    "rmse": rmse,
+                    "r2": r2,
+                    "mape": mape,
+                    "mean_actual": y_true_item.mean(),
+                    "mean_predicted": y_pred_item.mean(),
+                }
+            )
+
+        return pd.DataFrame(per_item_metrics).sort_values("mae")
 
     def save(self, path: str) -> None:
         """

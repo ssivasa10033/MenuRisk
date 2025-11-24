@@ -11,10 +11,11 @@ Institution: Computer Science @ Western University
 """
 
 import logging
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 logger = logging.getLogger(__name__)
 
@@ -261,3 +262,112 @@ class PortfolioAnalyzer:
         )
 
         return vol_range, return_range
+
+    def test_normality(
+        self, returns: np.ndarray, alpha: float = 0.05
+    ) -> Dict[str, Any]:
+        """
+        Test if returns are normally distributed using multiple tests.
+
+        Modern Portfolio Theory assumes normally distributed returns.
+        If returns are not normal, consider:
+        - Log-returns instead of simple returns
+        - Alternative risk measures (VaR, CVaR)
+        - Robust portfolio optimization methods
+
+        Args:
+            returns: Array of returns to test
+            alpha: Significance level (default: 0.05)
+
+        Returns:
+            Dictionary with test results:
+            - shapiro_stat: Shapiro-Wilk test statistic
+            - shapiro_p_value: Shapiro-Wilk p-value
+            - is_normal: Whether returns are normal at given alpha
+            - skewness: Distribution skewness
+            - kurtosis: Distribution kurtosis (excess)
+            - recommendation: String recommendation based on results
+        """
+        if len(returns) < 3:
+            logger.warning("Insufficient data for normality testing (need >= 3 samples)")
+            return {
+                "shapiro_stat": np.nan,
+                "shapiro_p_value": np.nan,
+                "jarque_bera_stat": np.nan,
+                "jarque_bera_p_value": np.nan,
+                "is_normal": False,
+                "skewness": np.nan,
+                "kurtosis": np.nan,
+                "recommendation": "Insufficient data for testing",
+            }
+
+        # Clean returns (remove NaN, inf, extreme outliers)
+        clean_returns = returns[~np.isnan(returns)]
+        clean_returns = clean_returns[~np.isinf(clean_returns)]
+
+        if len(clean_returns) < 3:
+            logger.warning("Insufficient valid data after cleaning")
+            return {
+                "shapiro_stat": np.nan,
+                "shapiro_p_value": np.nan,
+                "jarque_bera_stat": np.nan,
+                "jarque_bera_p_value": np.nan,
+                "is_normal": False,
+                "skewness": np.nan,
+                "kurtosis": np.nan,
+                "recommendation": "Insufficient valid data",
+            }
+
+        # Shapiro-Wilk test (most powerful for small samples)
+        shapiro_stat, shapiro_p = stats.shapiro(clean_returns)
+
+        # Jarque-Bera test (tests skewness and kurtosis)
+        jarque_bera_stat, jarque_bera_p = stats.jarque_bera(clean_returns)
+
+        # Calculate skewness and kurtosis
+        skewness = float(stats.skew(clean_returns))
+        kurtosis = float(stats.kurtosis(clean_returns))  # Excess kurtosis
+
+        # Determine if normal
+        is_normal = shapiro_p > alpha and jarque_bera_p > alpha
+
+        # Generate recommendation
+        if is_normal:
+            recommendation = (
+                "Returns appear normally distributed. "
+                "MPT assumptions are satisfied."
+            )
+        else:
+            if abs(skewness) > 1:
+                recommendation = (
+                    f"Returns are {'positively' if skewness > 0 else 'negatively'} "
+                    f"skewed (skew={skewness:.2f}). Consider using log-returns "
+                    "or robust portfolio methods."
+                )
+            elif abs(kurtosis) > 3:
+                recommendation = (
+                    f"Returns have {'heavy' if kurtosis > 0 else 'light'} tails "
+                    f"(kurtosis={kurtosis:.2f}). Consider using VaR/CVaR "
+                    "instead of volatility for risk measurement."
+                )
+            else:
+                recommendation = (
+                    "Returns deviate from normality. MPT assumptions may not hold. "
+                    "Consider alternative risk measures."
+                )
+
+        logger.info(
+            f"Normality test: Shapiro p={shapiro_p:.4f}, "
+            f"JB p={jarque_bera_p:.4f}, Normal={is_normal}"
+        )
+
+        return {
+            "shapiro_stat": float(shapiro_stat),
+            "shapiro_p_value": float(shapiro_p),
+            "jarque_bera_stat": float(jarque_bera_stat),
+            "jarque_bera_p_value": float(jarque_bera_p),
+            "is_normal": is_normal,
+            "skewness": skewness,
+            "kurtosis": kurtosis,
+            "recommendation": recommendation,
+        }
