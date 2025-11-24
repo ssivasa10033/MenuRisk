@@ -10,7 +10,7 @@ Institution: Computer Science @ Western University
 
 import logging
 import warnings
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -41,10 +41,10 @@ class RiskMetrics:
     def calculate_returns_timeseries(
         self,
         df: pd.DataFrame,
-        item_col: str = 'item_name',
-        date_col: str = 'date',
-        revenue_col: str = 'revenue',
-        cogs_col: str = 'cogs',
+        item_col: str = "item_name",
+        date_col: str = "date",
+        revenue_col: str = "revenue",
+        cogs_col: str = "cogs",
     ) -> pd.DataFrame:
         """
         Calculate time-series of profit margin returns for each item.
@@ -69,29 +69,26 @@ class RiskMetrics:
 
         # Calculate profit margin for each transaction
         # margin = (revenue - cogs) / revenue
-        df['profit_margin'] = (df[revenue_col] - df[cogs_col]) / df[revenue_col]
+        df["profit_margin"] = (df[revenue_col] - df[cogs_col]) / df[revenue_col]
 
         # Handle edge cases
-        df['profit_margin'] = df['profit_margin'].replace([np.inf, -np.inf], np.nan)
+        df["profit_margin"] = df["profit_margin"].replace([np.inf, -np.inf], np.nan)
 
         # Group by item and date, calculate daily average margin
         daily_margins = (
-            df.groupby([item_col, date_col])['profit_margin']
-            .mean()
-            .reset_index()
+            df.groupby([item_col, date_col])["profit_margin"].mean().reset_index()
         )
 
         # Sort by date within each item
         daily_margins = daily_margins.sort_values([item_col, date_col])
 
         # Calculate period-over-period changes (returns)
-        daily_margins['margin_return'] = (
-            daily_margins.groupby(item_col)['profit_margin']
-            .pct_change()
-        )
+        daily_margins["margin_return"] = daily_margins.groupby(item_col)[
+            "profit_margin"
+        ].pct_change()
 
         # Handle extreme returns
-        daily_margins['margin_return'] = daily_margins['margin_return'].clip(-1, 10)
+        daily_margins["margin_return"] = daily_margins["margin_return"].clip(-1, 10)
 
         return daily_margins
 
@@ -334,10 +331,10 @@ class RiskMetrics:
     def calculate_all_metrics(
         self,
         df: pd.DataFrame,
-        item_col: str = 'item_name',
-        date_col: str = 'date',
-        revenue_col: str = 'revenue',
-        cogs_col: str = 'cogs',
+        item_col: str = "item_name",
+        date_col: str = "date",
+        revenue_col: str = "revenue",
+        cogs_col: str = "cogs",
         periods_per_year: int = 252,
     ) -> Dict[str, Dict[str, float]]:
         """
@@ -362,25 +359,25 @@ class RiskMetrics:
         results = {}
 
         for item in returns_df[item_col].unique():
-            item_returns = returns_df[
-                returns_df[item_col] == item
-            ]['margin_return'].values
+            item_returns = returns_df[returns_df[item_col] == item][
+                "margin_return"
+            ].values
 
             results[item] = {
-                'sharpe_ratio': self.calculate_sharpe_ratio(
+                "sharpe_ratio": self.calculate_sharpe_ratio(
                     item_returns, periods_per_year
                 ),
-                'sortino_ratio': self.calculate_sortino_ratio(
+                "sortino_ratio": self.calculate_sortino_ratio(
                     item_returns, periods_per_year
                 ),
-                'max_drawdown': self.calculate_max_drawdown(item_returns),
-                'var_95': self.calculate_value_at_risk(item_returns, 0.95),
-                'cvar_95': self.calculate_conditional_var(item_returns, 0.95),
-                'mean_return': float(np.nanmean(item_returns) * periods_per_year),
-                'volatility': float(
+                "max_drawdown": self.calculate_max_drawdown(item_returns),
+                "var_95": self.calculate_value_at_risk(item_returns, 0.95),
+                "cvar_95": self.calculate_conditional_var(item_returns, 0.95),
+                "mean_return": float(np.nanmean(item_returns) * periods_per_year),
+                "volatility": float(
                     np.nanstd(item_returns, ddof=1) * np.sqrt(periods_per_year)
                 ),
-                'num_observations': len(item_returns[~np.isnan(item_returns)]),
+                "num_observations": len(item_returns[~np.isnan(item_returns)]),
             }
 
         return results
@@ -405,16 +402,16 @@ class RiskMetrics:
         recommendations = {}
 
         for item, item_metrics in metrics.items():
-            sharpe = item_metrics.get('sharpe_ratio', np.nan)
+            sharpe = item_metrics.get("sharpe_ratio", np.nan)
 
             if np.isnan(sharpe):
-                recommendations[item] = 'INSUFFICIENT_DATA'
+                recommendations[item] = "INSUFFICIENT_DATA"
             elif sharpe >= keep_threshold:
-                recommendations[item] = 'KEEP'
+                recommendations[item] = "KEEP"
             elif sharpe >= monitor_threshold:
-                recommendations[item] = 'MONITOR'
+                recommendations[item] = "MONITOR"
             else:
-                recommendations[item] = 'REMOVE'
+                recommendations[item] = "REMOVE"
 
         return recommendations
 
@@ -436,9 +433,9 @@ class PortfolioMetrics:
     def calculate_portfolio_sharpe(
         self,
         df: pd.DataFrame,
-        date_col: str = 'date',
-        revenue_col: str = 'revenue',
-        cogs_col: str = 'cogs',
+        date_col: str = "date",
+        revenue_col: str = "revenue",
+        cogs_col: str = "cogs",
         periods_per_year: int = 252,
     ) -> float:
         """
@@ -460,24 +457,27 @@ class PortfolioMetrics:
         df[date_col] = pd.to_datetime(df[date_col])
 
         # Aggregate by date
-        daily_totals = df.groupby(date_col).agg({
-            revenue_col: 'sum',
-            cogs_col: 'sum',
-        }).reset_index()
+        daily_totals = (
+            df.groupby(date_col)
+            .agg(
+                {
+                    revenue_col: "sum",
+                    cogs_col: "sum",
+                }
+            )
+            .reset_index()
+        )
 
         # Calculate daily portfolio margin
-        daily_totals['portfolio_margin'] = (
-            (daily_totals[revenue_col] - daily_totals[cogs_col]) /
-            daily_totals[revenue_col]
-        )
+        daily_totals["portfolio_margin"] = (
+            daily_totals[revenue_col] - daily_totals[cogs_col]
+        ) / daily_totals[revenue_col]
 
         # Calculate daily returns
         daily_totals = daily_totals.sort_values(date_col)
-        daily_totals['portfolio_return'] = (
-            daily_totals['portfolio_margin'].pct_change()
-        )
+        daily_totals["portfolio_return"] = daily_totals["portfolio_margin"].pct_change()
 
-        returns = daily_totals['portfolio_return'].dropna().values
+        returns = daily_totals["portfolio_return"].dropna().values
 
         return self.risk_metrics.calculate_sharpe_ratio(returns, periods_per_year)
 
@@ -497,8 +497,9 @@ class PortfolioMetrics:
             Diversification ratio
         """
         volatilities = [
-            m['volatility'] for m in item_metrics.values()
-            if not np.isnan(m.get('volatility', np.nan))
+            m["volatility"]
+            for m in item_metrics.values()
+            if not np.isnan(m.get("volatility", np.nan))
         ]
 
         if len(volatilities) < 2:
@@ -516,10 +517,10 @@ class PortfolioMetrics:
     def get_portfolio_summary(
         self,
         df: pd.DataFrame,
-        item_col: str = 'item_name',
-        date_col: str = 'date',
-        revenue_col: str = 'revenue',
-        cogs_col: str = 'cogs',
+        item_col: str = "item_name",
+        date_col: str = "date",
+        revenue_col: str = "revenue",
+        cogs_col: str = "cogs",
         periods_per_year: int = 252,
     ) -> Dict[str, Union[float, int, Dict]]:
         """
@@ -546,10 +547,12 @@ class PortfolioMetrics:
 
         # Count recommendations
         rec_counts = {
-            'keep': sum(1 for r in recommendations.values() if r == 'KEEP'),
-            'monitor': sum(1 for r in recommendations.values() if r == 'MONITOR'),
-            'remove': sum(1 for r in recommendations.values() if r == 'REMOVE'),
-            'insufficient_data': sum(1 for r in recommendations.values() if r == 'INSUFFICIENT_DATA'),
+            "keep": sum(1 for r in recommendations.values() if r == "KEEP"),
+            "monitor": sum(1 for r in recommendations.values() if r == "MONITOR"),
+            "remove": sum(1 for r in recommendations.values() if r == "REMOVE"),
+            "insufficient_data": sum(
+                1 for r in recommendations.values() if r == "INSUFFICIENT_DATA"
+            ),
         }
 
         # Portfolio Sharpe
@@ -561,10 +564,10 @@ class PortfolioMetrics:
         diversification = self.calculate_diversification_ratio(item_metrics)
 
         return {
-            'total_items': len(item_metrics),
-            'portfolio_sharpe': portfolio_sharpe,
-            'diversification_ratio': diversification,
-            'recommendation_counts': rec_counts,
-            'item_metrics': item_metrics,
-            'recommendations': recommendations,
+            "total_items": len(item_metrics),
+            "portfolio_sharpe": portfolio_sharpe,
+            "diversification_ratio": diversification,
+            "recommendation_counts": rec_counts,
+            "item_metrics": item_metrics,
+            "recommendations": recommendations,
         }

@@ -174,7 +174,7 @@ async def upload_data(file: UploadFile = File(...)):
 
     Returns validation results.
     """
-    if not file.filename.endswith('.csv'):
+    if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="File must be CSV")
 
     try:
@@ -189,6 +189,7 @@ async def upload_data(file: UploadFile = File(...)):
             )
 
         import io
+
         df = pd.read_csv(io.BytesIO(contents))
 
     except HTTPException:
@@ -215,7 +216,7 @@ async def upload_data(file: UploadFile = File(...)):
     return UploadResponse(
         message="Upload successful",
         rows=len(state.last_data),
-        items=state.last_data['item_name'].nunique(),
+        items=state.last_data["item_name"].nunique(),
         warnings=result.warnings,
     )
 
@@ -238,11 +239,11 @@ async def train_model():
         df = state.last_data
 
         # Feature engineering
-        if 'date' in df.columns:
+        if "date" in df.columns:
             # Time-series split
-            df['date'] = pd.to_datetime(df['date'])
-            cutoff = df['date'].max() - pd.Timedelta(days=settings.test_size_days)
-            cutoff_str = cutoff.strftime('%Y-%m-%d')
+            df["date"] = pd.to_datetime(df["date"])
+            cutoff = df["date"].max() - pd.Timedelta(days=settings.test_size_days)
+            cutoff_str = cutoff.strftime("%Y-%m-%d")
 
             state.feature_engineer = TimeSeriesFeatureEngineer()
             state.feature_engineer.fit(df, cutoff_str)
@@ -260,25 +261,22 @@ async def train_model():
 
             return TrainingResponse(
                 message="Model trained successfully",
-                r2_score=metrics['r2_score'],
-                mae=metrics['mae'],
-                rmse=metrics['rmse'],
-                cv_r2_mean=metrics.get('cv_r2_mean'),
-                cv_r2_std=metrics.get('cv_r2_std'),
+                r2_score=metrics["r2_score"],
+                mae=metrics["mae"],
+                rmse=metrics["rmse"],
+                cv_r2_mean=metrics.get("cv_r2_mean"),
+                cv_r2_std=metrics.get("cv_r2_std"),
             )
 
         # Prepare features for time-series
-        exclude_cols = ['date', 'item_name', 'quantity_sold', 'profit_margin']
-        feature_cols = [
-            col for col in features_df.columns
-            if col not in exclude_cols
-        ]
-        numeric_cols = features_df[feature_cols].select_dtypes(
-            include=['number']
-        ).columns.tolist()
+        exclude_cols = ["date", "item_name", "quantity_sold", "profit_margin"]
+        feature_cols = [col for col in features_df.columns if col not in exclude_cols]
+        numeric_cols = (
+            features_df[feature_cols].select_dtypes(include=["number"]).columns.tolist()
+        )
 
         X = features_df[numeric_cols].dropna()
-        y = features_df.loc[X.index, 'quantity_sold']
+        y = features_df.loc[X.index, "quantity_sold"]
 
         # Train model
         state.model = DemandForecaster(tune_hyperparams=settings.tune_hyperparams)
@@ -287,11 +285,11 @@ async def train_model():
 
         return TrainingResponse(
             message="Model trained successfully",
-            r2_score=metrics['r2_score'],
-            mae=metrics['mae'],
-            rmse=metrics['rmse'],
-            cv_r2_mean=metrics.get('cv_r2_mean'),
-            cv_r2_std=metrics.get('cv_r2_std'),
+            r2_score=metrics["r2_score"],
+            mae=metrics["mae"],
+            rmse=metrics["rmse"],
+            cv_r2_mean=metrics.get("cv_r2_mean"),
+            cv_r2_std=metrics.get("cv_r2_std"),
         )
 
     except Exception as e:
@@ -326,20 +324,20 @@ async def get_portfolio_metrics():
         df = state.last_data.copy()
 
         # Ensure we have revenue and cogs
-        if 'revenue' not in df.columns:
-            df['revenue'] = df['current_price'] * df['quantity_sold']
-        if 'total_cogs' not in df.columns:
-            df['total_cogs'] = df['cogs'] * df['quantity_sold']
+        if "revenue" not in df.columns:
+            df["revenue"] = df["current_price"] * df["quantity_sold"]
+        if "total_cogs" not in df.columns:
+            df["total_cogs"] = df["cogs"] * df["quantity_sold"]
 
         risk_metrics = RiskMetrics(risk_free_rate=settings.risk_free_rate)
         portfolio = PortfolioMetrics(risk_metrics)
 
         summary = portfolio.get_portfolio_summary(
             df,
-            item_col='item_name',
-            date_col='date' if 'date' in df.columns else None,
-            revenue_col='revenue',
-            cogs_col='total_cogs',
+            item_col="item_name",
+            date_col="date" if "date" in df.columns else None,
+            revenue_col="revenue",
+            cogs_col="total_cogs",
         )
 
         return summary
@@ -367,19 +365,19 @@ async def get_recommendations():
         df = state.last_data.copy()
 
         # Ensure we have revenue and cogs
-        if 'revenue' not in df.columns:
-            df['revenue'] = df['current_price'] * df['quantity_sold']
-        if 'total_cogs' not in df.columns:
-            df['total_cogs'] = df['cogs'] * df['quantity_sold']
+        if "revenue" not in df.columns:
+            df["revenue"] = df["current_price"] * df["quantity_sold"]
+        if "total_cogs" not in df.columns:
+            df["total_cogs"] = df["cogs"] * df["quantity_sold"]
 
         risk_metrics = RiskMetrics(risk_free_rate=settings.risk_free_rate)
 
         # Calculate per-item metrics
         item_metrics = risk_metrics.calculate_all_metrics(
             df,
-            item_col='item_name',
-            revenue_col='revenue',
-            cogs_col='total_cogs',
+            item_col="item_name",
+            revenue_col="revenue",
+            cogs_col="total_cogs",
         )
 
         # Get recommendations
@@ -453,7 +451,7 @@ async def get_sample_data():
     return {
         "message": "Sample data generated",
         "rows": len(sample_df),
-        "data": sample_df.to_dict(orient='records')[:10],  # First 10 rows
+        "data": sample_df.to_dict(orient="records")[:10],  # First 10 rows
     }
 
 

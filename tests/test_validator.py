@@ -14,7 +14,6 @@ from src.data.validator import (
     MenuItemSchema,
     validate_upload,
     VALID_PROVINCES,
-    VALID_CATEGORIES,
 )
 
 
@@ -127,25 +126,29 @@ class TestDataValidator:
     @pytest.fixture
     def valid_dataframe(self):
         """Create a valid test DataFrame."""
-        return pd.DataFrame({
-            'item_name': ['Item A', 'Item B', 'Item C'] * 20,
-            'current_price': [15.99, 12.50, 8.99] * 20,
-            'cogs': [6.00, 5.00, 3.50] * 20,
-            'quantity_sold': [40, 55, 80] * 20,
-            'category': ['Main', 'Appetizer', 'Beverage'] * 20,
-            'season': ['Summer', 'Summer', 'Summer'] * 20,
-            'province': ['ON', 'BC', 'AB'] * 20,
-        })
+        return pd.DataFrame(
+            {
+                "item_name": ["Item A", "Item B", "Item C"] * 20,
+                "current_price": [15.99, 12.50, 8.99] * 20,
+                "cogs": [6.00, 5.00, 3.50] * 20,
+                "quantity_sold": [40, 55, 80] * 20,
+                "category": ["Main", "Appetizer", "Beverage"] * 20,
+                "season": ["Summer", "Summer", "Summer"] * 20,
+                "province": ["ON", "BC", "AB"] * 20,
+            }
+        )
 
     @pytest.fixture
     def invalid_dataframe(self):
         """Create an invalid test DataFrame."""
-        return pd.DataFrame({
-            'item_name': ['Item A', '', 'Item C'],
-            'current_price': [15.99, -10.00, 8.99],
-            'cogs': [6.00, 5.00, 20.00],  # COGS > price for Item C
-            'quantity_sold': [40, 55, -5],
-        })
+        return pd.DataFrame(
+            {
+                "item_name": ["Item A", "", "Item C"],
+                "current_price": [15.99, -10.00, 8.99],
+                "cogs": [6.00, 5.00, 20.00],  # COGS > price for Item C
+                "quantity_sold": [40, 55, -5],
+            }
+        )
 
     def test_validate_valid_data(self, valid_dataframe):
         """Test validation of valid data."""
@@ -158,17 +161,19 @@ class TestDataValidator:
 
     def test_validate_missing_columns(self):
         """Test validation catches missing required columns."""
-        df = pd.DataFrame({
-            'item_name': ['A', 'B'],
-            'current_price': [10.0, 20.0],
-            # Missing 'cogs' and 'quantity_sold'
-        })
+        df = pd.DataFrame(
+            {
+                "item_name": ["A", "B"],
+                "current_price": [10.0, 20.0],
+                # Missing 'cogs' and 'quantity_sold'
+            }
+        )
 
         validator = DataValidator()
         result = validator.validate_csv(df)
 
         assert not result.is_valid
-        assert any('Missing' in e for e in result.errors)
+        assert any("Missing" in e for e in result.errors)
 
     def test_validate_with_invalid_rows(self, invalid_dataframe):
         """Test validation identifies invalid rows."""
@@ -183,39 +188,46 @@ class TestDataValidator:
         validator = DataValidator()
 
         # Add valid rows
-        df = pd.concat([
-            invalid_dataframe,
-            pd.DataFrame({
-                'item_name': ['Valid Item'],
-                'current_price': [15.00],
-                'cogs': [6.00],
-                'quantity_sold': [50],
-            }),
-        ], ignore_index=True)
+        df = pd.concat(
+            [
+                invalid_dataframe,
+                pd.DataFrame(
+                    {
+                        "item_name": ["Valid Item"],
+                        "current_price": [15.00],
+                        "cogs": [6.00],
+                        "quantity_sold": [50],
+                    }
+                ),
+            ],
+            ignore_index=True,
+        )
 
         cleaned = validator.clean_dataframe(df)
 
         # Should have fewer rows after cleaning
         assert len(cleaned) < len(df)
         # All remaining rows should have valid values
-        assert (cleaned['current_price'] > 0).all()
-        assert (cleaned['cogs'] > 0).all()
-        assert (cleaned['cogs'] < cleaned['current_price']).all()
+        assert (cleaned["current_price"] > 0).all()
+        assert (cleaned["cogs"] > 0).all()
+        assert (cleaned["cogs"] < cleaned["current_price"]).all()
 
     def test_low_observations_warning(self):
         """Test warning for low observation counts."""
-        df = pd.DataFrame({
-            'item_name': ['A', 'B', 'C'],
-            'current_price': [10.0, 15.0, 20.0],
-            'cogs': [4.0, 6.0, 8.0],
-            'quantity_sold': [5, 10, 15],
-        })
+        df = pd.DataFrame(
+            {
+                "item_name": ["A", "B", "C"],
+                "current_price": [10.0, 15.0, 20.0],
+                "cogs": [4.0, 6.0, 8.0],
+                "quantity_sold": [5, 10, 15],
+            }
+        )
 
         validator = DataValidator(min_observations=30)
         result = validator.validate_csv(df)
 
         # Should have warning about low observations
-        assert any('observations' in w.lower() for w in result.warnings)
+        assert any("observations" in w.lower() for w in result.warnings)
 
 
 class TestValidateUpload:
@@ -223,12 +235,14 @@ class TestValidateUpload:
 
     def test_valid_upload(self):
         """Test valid upload returns success."""
-        df = pd.DataFrame({
-            'item_name': ['Item ' + str(i) for i in range(50)],
-            'current_price': [15.99] * 50,
-            'cogs': [6.00] * 50,
-            'quantity_sold': [40] * 50,
-        })
+        df = pd.DataFrame(
+            {
+                "item_name": ["Item " + str(i) for i in range(50)],
+                "current_price": [15.99] * 50,
+                "cogs": [6.00] * 50,
+                "quantity_sold": [40] * 50,
+            }
+        )
 
         is_valid, messages, cleaned = validate_upload(df)
 
@@ -237,10 +251,12 @@ class TestValidateUpload:
 
     def test_invalid_upload(self):
         """Test invalid upload returns errors."""
-        df = pd.DataFrame({
-            'item_name': ['A'],
-            # Missing required columns
-        })
+        df = pd.DataFrame(
+            {
+                "item_name": ["A"],
+                # Missing required columns
+            }
+        )
 
         is_valid, messages, cleaned = validate_upload(df)
 
