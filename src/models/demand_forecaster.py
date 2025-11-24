@@ -74,13 +74,13 @@ class DemandForecaster:
             Dictionary of parameter names to possible values
         """
         return {
-            'n_estimators': [200, 300, 500, 800],
-            'max_depth': [15, 20, 25, None],  # Deeper trees for RF
-            'min_samples_split': [2, 5, 10],
-            'min_samples_leaf': [1, 2, 4],
-            'max_features': ['sqrt', 'log2', 0.5, 0.7],
-            'bootstrap': [True],
-            'max_samples': [0.8, 0.9, None],  # Bootstrap sample size
+            "n_estimators": [200, 300, 500, 800],
+            "max_depth": [15, 20, 25, None],  # Deeper trees for RF
+            "min_samples_split": [2, 5, 10],
+            "min_samples_leaf": [1, 2, 4],
+            "max_features": ["sqrt", "log2", 0.5, 0.7],
+            "bootstrap": [True],
+            "max_samples": [0.8, 0.9, None],  # Bootstrap sample size
         }
 
     def get_default_params(self) -> Dict[str, Any]:
@@ -91,13 +91,13 @@ class DemandForecaster:
             Dictionary of default parameters
         """
         return {
-            'n_estimators': 300,
-            'max_depth': None,  # Let trees grow fully
-            'min_samples_split': 5,
-            'min_samples_leaf': 2,
-            'max_features': 'sqrt',
-            'bootstrap': True,
-            'max_samples': 0.9,
+            "n_estimators": 300,
+            "max_depth": None,  # Let trees grow fully
+            "min_samples_split": 5,
+            "min_samples_leaf": 2,
+            "max_features": "sqrt",
+            "bootstrap": True,
+            "max_samples": 0.9,
         }
 
     def train(
@@ -126,7 +126,7 @@ class DemandForecaster:
         # Store feature names
         if feature_names is not None:
             self.feature_names = feature_names
-        elif hasattr(X_train, 'columns'):
+        elif hasattr(X_train, "columns"):
             self.feature_names = list(X_train.columns)
 
         # Convert to numpy if DataFrame
@@ -145,23 +145,23 @@ class DemandForecaster:
         # Calculate training metrics
         y_train_pred = self.model.predict(X_train)
         self.train_metrics = {
-            'r2_score': r2_score(y_train, y_train_pred),
-            'mae': mean_absolute_error(y_train, y_train_pred),
-            'rmse': np.sqrt(mean_squared_error(y_train, y_train_pred)),
+            "r2_score": r2_score(y_train, y_train_pred),
+            "mae": mean_absolute_error(y_train, y_train_pred),
+            "rmse": np.sqrt(mean_squared_error(y_train, y_train_pred)),
         }
 
         # Cross-validation metrics
         if len(X_train) > cv_splits * 10:
             tscv = TimeSeriesSplit(n_splits=cv_splits)
             cv_scores = cross_val_score(
-                self.model, X_train, y_train, cv=tscv, scoring='r2'
+                self.model, X_train, y_train, cv=tscv, scoring="r2"
             )
             self.cv_metrics = {
-                'cv_r2_mean': float(cv_scores.mean()),
-                'cv_r2_std': float(cv_scores.std()),
+                "cv_r2_mean": float(cv_scores.mean()),
+                "cv_r2_std": float(cv_scores.std()),
             }
         else:
-            self.cv_metrics = {'cv_r2_mean': np.nan, 'cv_r2_std': np.nan}
+            self.cv_metrics = {"cv_r2_mean": np.nan, "cv_r2_std": np.nan}
 
         logger.info(
             f"Training complete. R²: {self.train_metrics['r2_score']:.4f}, "
@@ -171,8 +171,8 @@ class DemandForecaster:
         return {
             **self.train_metrics,
             **self.cv_metrics,
-            'best_params': self.best_params,
-            'feature_importance': self.get_feature_importance(),
+            "best_params": self.best_params,
+            "feature_importance": self.get_feature_importance(),
         }
 
     def _train_with_tuning(
@@ -200,7 +200,7 @@ class DemandForecaster:
             param_distributions=self.get_param_distributions(),
             n_iter=n_iter,
             cv=tscv,
-            scoring='neg_mean_absolute_error',
+            scoring="neg_mean_absolute_error",
             n_jobs=self.n_jobs,
             verbose=1,
             random_state=self.random_state,
@@ -216,14 +216,12 @@ class DemandForecaster:
         logger.info(f"Best CV MAE: {-search.best_score_:.2f}")
 
         # Check for overfitting
-        train_score = search.cv_results_['mean_train_score'][search.best_index_]
+        train_score = search.cv_results_["mean_train_score"][search.best_index_]
         val_score = search.best_score_
         logger.info(f"Train MAE: {-train_score:.2f}, Val MAE: {-val_score:.2f}")
 
         if abs(train_score - val_score) > 0.3 * abs(val_score):
-            logger.warning(
-                "Potential overfitting detected. Train-val gap is large."
-            )
+            logger.warning("Potential overfitting detected. Train-val gap is large.")
 
     def _train_default(
         self,
@@ -244,7 +242,7 @@ class DemandForecaster:
         )
         self.model.fit(X_train, y_train)
 
-        if hasattr(self.model, 'oob_score_'):
+        if hasattr(self.model, "oob_score_"):
             logger.info(f"OOB Score: {self.model.oob_score_:.4f}")
 
     def predict(
@@ -271,9 +269,7 @@ class DemandForecaster:
 
         if return_std:
             # Get predictions from all trees
-            predictions = np.array([
-                tree.predict(X) for tree in self.model.estimators_
-            ])
+            predictions = np.array([tree.predict(X) for tree in self.model.estimators_])
             mean_pred = predictions.mean(axis=0)
             std_pred = predictions.std(axis=0)
             return mean_pred, std_pred
@@ -303,9 +299,9 @@ class DemandForecaster:
             X = X.values
 
         # Get predictions from all trees
-        tree_predictions = np.array([
-            tree.predict(X) for tree in self.model.estimators_
-        ])
+        tree_predictions = np.array(
+            [tree.predict(X) for tree in self.model.estimators_]
+        )
 
         predictions = tree_predictions.mean(axis=0)
 
@@ -328,15 +324,19 @@ class DemandForecaster:
         importances = self.model.feature_importances_
 
         if self.feature_names and len(self.feature_names) == len(importances):
-            return pd.DataFrame({
-                'feature': self.feature_names,
-                'importance': importances,
-            }).sort_values('importance', ascending=False)
+            return pd.DataFrame(
+                {
+                    "feature": self.feature_names,
+                    "importance": importances,
+                }
+            ).sort_values("importance", ascending=False)
         else:
-            return pd.DataFrame({
-                'feature': [f'feature_{i}' for i in range(len(importances))],
-                'importance': importances,
-            }).sort_values('importance', ascending=False)
+            return pd.DataFrame(
+                {
+                    "feature": [f"feature_{i}" for i in range(len(importances))],
+                    "importance": importances,
+                }
+            ).sort_values("importance", ascending=False)
 
     def get_metrics(self) -> Dict[str, Any]:
         """
@@ -346,14 +346,14 @@ class DemandForecaster:
             Dictionary with training and CV metrics
         """
         if not self.is_trained:
-            return {'error': 'Model not trained'}
+            return {"error": "Model not trained"}
 
         return {
             **self.train_metrics,
             **self.cv_metrics,
-            'best_params': self.best_params,
-            'is_trained': self.is_trained,
-            'oob_score': getattr(self.model, 'oob_score_', None),
+            "best_params": self.best_params,
+            "is_trained": self.is_trained,
+            "oob_score": getattr(self.model, "oob_score_", None),
         }
 
     def evaluate(
@@ -377,9 +377,9 @@ class DemandForecaster:
         predictions = self.predict(X_test)
 
         return {
-            'test_r2': r2_score(y_test, predictions),
-            'test_mae': mean_absolute_error(y_test, predictions),
-            'test_rmse': np.sqrt(mean_squared_error(y_test, predictions)),
+            "test_r2": r2_score(y_test, predictions),
+            "test_mae": mean_absolute_error(y_test, predictions),
+            "test_rmse": np.sqrt(mean_squared_error(y_test, predictions)),
         }
 
     def save(self, path: str) -> None:
@@ -390,17 +390,21 @@ class DemandForecaster:
             path: Path to save the model
         """
         import joblib
-        joblib.dump({
-            'model': self.model,
-            'best_params': self.best_params,
-            'feature_names': self.feature_names,
-            'train_metrics': self.train_metrics,
-            'cv_metrics': self.cv_metrics,
-        }, path)
+
+        joblib.dump(
+            {
+                "model": self.model,
+                "best_params": self.best_params,
+                "feature_names": self.feature_names,
+                "train_metrics": self.train_metrics,
+                "cv_metrics": self.cv_metrics,
+            },
+            path,
+        )
         logger.info(f"Model saved to {path}")
 
     @classmethod
-    def load(cls, path: str) -> 'DemandForecaster':
+    def load(cls, path: str) -> "DemandForecaster":
         """
         Load model from disk.
 
@@ -411,14 +415,15 @@ class DemandForecaster:
             Loaded DemandForecaster instance
         """
         import joblib
+
         data = joblib.load(path)
 
         instance = cls(tune_hyperparams=False)
-        instance.model = data['model']
-        instance.best_params = data['best_params']
-        instance.feature_names = data['feature_names']
-        instance.train_metrics = data['train_metrics']
-        instance.cv_metrics = data['cv_metrics']
+        instance.model = data["model"]
+        instance.best_params = data["best_params"]
+        instance.feature_names = data["feature_names"]
+        instance.train_metrics = data["train_metrics"]
+        instance.cv_metrics = data["cv_metrics"]
         instance.is_trained = True
 
         logger.info(f"Model loaded from {path}")

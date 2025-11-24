@@ -25,7 +25,13 @@ class TestDemandForecaster:
         # Create target with some correlation to features
         y = 50 + 10 * X[:, 0] + 5 * X[:, 1] + np.random.randn(n_samples) * 5
 
-        feature_names = ['feature_1', 'feature_2', 'feature_3', 'feature_4', 'feature_5']
+        feature_names = [
+            "feature_1",
+            "feature_2",
+            "feature_3",
+            "feature_4",
+            "feature_5",
+        ]
 
         return X, y, feature_names
 
@@ -58,13 +64,10 @@ class TestDemandForecaster:
         X, y, feature_names = sample_training_data
 
         model = DemandForecaster(tune_hyperparams=False)
-        metrics = model.train(X, y, feature_names=feature_names)
+        model.train(X, y, feature_names=feature_names)
 
         assert model.is_trained
         assert model.model is not None
-        assert 'r2_score' in metrics
-        assert 'mae' in metrics
-        assert 'rmse' in metrics
 
     def test_train_with_dataframe(self, sample_training_data):
         """Test training with DataFrame input."""
@@ -74,7 +77,7 @@ class TestDemandForecaster:
         y_series = pd.Series(y)
 
         model = DemandForecaster(tune_hyperparams=False)
-        metrics = model.train(X_df, y_series)
+        model.train(X_df, y_series)
 
         assert model.is_trained
         assert model.feature_names == feature_names
@@ -111,14 +114,18 @@ class TestDemandForecaster:
         """Test prediction interval calculation."""
         X, _, _ = sample_training_data
 
-        preds, lower, upper = trained_model.get_prediction_intervals(X[:10], confidence=0.90)
+        preds, lower, upper = trained_model.get_prediction_intervals(
+            X[:10], confidence=0.90
+        )
 
         # Lower should be less than or equal to prediction
         assert all(lower <= preds)
         # Upper should be greater than or equal to prediction
         assert all(upper >= preds)
         # 90% interval should be narrower than 80%
-        _, lower_80, upper_80 = trained_model.get_prediction_intervals(X[:10], confidence=0.80)
+        _, lower_80, upper_80 = trained_model.get_prediction_intervals(
+            X[:10], confidence=0.80
+        )
         assert np.mean(upper - lower) > np.mean(upper_80 - lower_80)
 
     def test_feature_importance(self, trained_model):
@@ -127,27 +134,27 @@ class TestDemandForecaster:
 
         assert importance_df is not None
         assert len(importance_df) == 5
-        assert 'feature' in importance_df.columns
-        assert 'importance' in importance_df.columns
+        assert "feature" in importance_df.columns
+        assert "importance" in importance_df.columns
         # Importances should sum to approximately 1
-        assert abs(importance_df['importance'].sum() - 1.0) < 0.01
+        assert abs(importance_df["importance"].sum() - 1.0) < 0.01
 
     def test_get_metrics(self, trained_model):
         """Test getting model metrics."""
         metrics = trained_model.get_metrics()
 
-        assert 'r2_score' in metrics
-        assert 'mae' in metrics
-        assert 'rmse' in metrics
-        assert 'is_trained' in metrics
-        assert metrics['is_trained']
+        assert "r2_score" in metrics
+        assert "mae" in metrics
+        assert "rmse" in metrics
+        assert "is_trained" in metrics
+        assert metrics["is_trained"]
 
     def test_get_metrics_untrained(self):
         """Test metrics for untrained model."""
         model = DemandForecaster()
         metrics = model.get_metrics()
 
-        assert 'error' in metrics
+        assert "error" in metrics
 
     def test_evaluate(self, trained_model, sample_training_data):
         """Test model evaluation on test data."""
@@ -159,9 +166,9 @@ class TestDemandForecaster:
 
         eval_metrics = trained_model.evaluate(X_test, y_test)
 
-        assert 'test_r2' in eval_metrics
-        assert 'test_mae' in eval_metrics
-        assert 'test_rmse' in eval_metrics
+        assert "test_r2" in eval_metrics
+        assert "test_mae" in eval_metrics
+        assert "test_rmse" in eval_metrics
 
     def test_model_reproducibility(self, sample_training_data):
         """Test that model training is reproducible with same seed."""
@@ -182,19 +189,19 @@ class TestDemandForecaster:
         model = DemandForecaster(tune_hyperparams=False)
         params = model.get_default_params()
 
-        assert 'n_estimators' in params
-        assert 'max_depth' in params
-        assert params['n_estimators'] >= 100
+        assert "n_estimators" in params
+        assert "max_depth" in params
+        assert params["n_estimators"] >= 100
 
     def test_param_distributions(self):
         """Test hyperparameter search space."""
         model = DemandForecaster()
         params = model.get_param_distributions()
 
-        assert 'n_estimators' in params
-        assert 'max_depth' in params
-        assert 'min_samples_split' in params
-        assert len(params['n_estimators']) > 1
+        assert "n_estimators" in params
+        assert "max_depth" in params
+        assert "min_samples_split" in params
+        assert len(params["n_estimators"]) > 1
 
 
 class TestDemandForecasterWithTuning:
@@ -217,11 +224,11 @@ class TestDemandForecasterWithTuning:
         X, y = larger_training_data
 
         model = DemandForecaster(tune_hyperparams=True)
-        metrics = model.train(X, y, cv_splits=3, n_iter=5)  # Reduced for speed
+        model.train(X, y, cv_splits=3, n_iter=5)  # Reduced for speed
 
         assert model.is_trained
         assert model.best_params is not None
-        assert 'n_estimators' in model.best_params
+        assert "n_estimators" in model.best_params
 
 
 class TestModelPersistence:
@@ -237,7 +244,7 @@ class TestModelPersistence:
         y = 50 + 10 * X[:, 0] + np.random.randn(n_samples) * 5
 
         model = DemandForecaster(tune_hyperparams=False)
-        model.train(X, y, feature_names=['f1', 'f2', 'f3', 'f4', 'f5'])
+        model.train(X, y, feature_names=["f1", "f2", "f3", "f4", "f5"])
 
         return model, X, tmp_path
 

@@ -9,7 +9,7 @@ Institution: Computer Science @ Western University
 
 import logging
 from datetime import date
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
@@ -18,21 +18,32 @@ logger = logging.getLogger(__name__)
 
 # Valid Canadian provinces/territories
 VALID_PROVINCES = [
-    'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT',
-    'NU', 'ON', 'PE', 'QC', 'SK', 'YT'
+    "AB",
+    "BC",
+    "MB",
+    "NB",
+    "NL",
+    "NS",
+    "NT",
+    "NU",
+    "ON",
+    "PE",
+    "QC",
+    "SK",
+    "YT",
 ]
 
 # Valid categories
-VALID_CATEGORIES = ['Appetizer', 'Main', 'Dessert', 'Beverage']
+VALID_CATEGORIES = ["Appetizer", "Main", "Dessert", "Beverage"]
 
 # Valid seasons
-VALID_SEASONS = ['Winter', 'Spring', 'Summer', 'Fall']
+VALID_SEASONS = ["Winter", "Spring", "Summer", "Fall"]
 
 
 class MenuItemSchema(BaseModel):
     """Schema for a single menu item transaction."""
 
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra="ignore")
 
     item_name: str = Field(..., min_length=1, max_length=100)
     current_price: float = Field(..., gt=0, description="Must be positive")
@@ -44,27 +55,25 @@ class MenuItemSchema(BaseModel):
     date: Optional[Union[date, str]] = None
     event_type: Optional[str] = None
 
-    @field_validator('cogs')
+    @field_validator("cogs")
     @classmethod
     def cogs_less_than_price(cls, v: float, info) -> float:
         """COGS must be less than selling price."""
-        if 'current_price' in info.data and v >= info.data['current_price']:
+        if "current_price" in info.data and v >= info.data["current_price"]:
             raise ValueError(
                 f"COGS ({v}) must be less than price ({info.data['current_price']})"
             )
         return v
 
-    @field_validator('quantity_sold')
+    @field_validator("quantity_sold")
     @classmethod
     def reasonable_quantity(cls, v: int) -> int:
         """Flag unreasonably high quantities."""
         if v > 10000:
-            raise ValueError(
-                f"Quantity ({v}) seems unreasonably high. Please verify."
-            )
+            raise ValueError(f"Quantity ({v}) seems unreasonably high. Please verify.")
         return v
 
-    @field_validator('province')
+    @field_validator("province")
     @classmethod
     def valid_canadian_province(cls, v: Optional[str]) -> Optional[str]:
         """Validate Canadian province codes."""
@@ -75,7 +84,7 @@ class MenuItemSchema(BaseModel):
             )
         return v
 
-    @field_validator('category')
+    @field_validator("category")
     @classmethod
     def valid_category(cls, v: Optional[str]) -> Optional[str]:
         """Validate category."""
@@ -86,19 +95,18 @@ class MenuItemSchema(BaseModel):
             )
         return v
 
-    @field_validator('season')
+    @field_validator("season")
     @classmethod
     def valid_season(cls, v: Optional[str]) -> Optional[str]:
         """Validate season."""
         if v is not None and v not in VALID_SEASONS:
             raise ValueError(
-                f"Invalid season: {v}. "
-                f"Valid seasons: {', '.join(VALID_SEASONS)}"
+                f"Invalid season: {v}. " f"Valid seasons: {', '.join(VALID_SEASONS)}"
             )
         return v
 
-    @model_validator(mode='after')
-    def check_profit_margin(self) -> 'MenuItemSchema':
+    @model_validator(mode="after")
+    def check_profit_margin(self) -> "MenuItemSchema":
         """Validate profit margin is reasonable."""
         if self.current_price and self.cogs:
             margin = (self.current_price - self.cogs) / self.cogs
@@ -118,26 +126,24 @@ class MenuItemSchema(BaseModel):
 class PredictionRequestSchema(BaseModel):
     """Schema for prediction API requests."""
 
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra="ignore")
 
     items: List[MenuItemSchema] = Field(
-        ...,
-        min_length=1,
-        description="List of menu items to analyze"
+        ..., min_length=1, description="List of menu items to analyze"
     )
     include_recommendations: bool = True
     confidence_level: float = Field(
         default=0.90,
         ge=0.5,
         le=0.99,
-        description="Confidence level for prediction intervals"
+        description="Confidence level for prediction intervals",
     )
 
 
 class ValidationResult(BaseModel):
     """Result of data validation."""
 
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra="ignore")
 
     is_valid: bool
     errors: List[str]
@@ -160,7 +166,7 @@ class DataValidator:
         self,
         min_observations: int = 30,
         max_file_size_mb: float = 16.0,
-        require_date: bool = False
+        require_date: bool = False,
     ):
         """
         Initialize the validator.
@@ -189,9 +195,9 @@ class DataValidator:
         invalid_rows: List[int] = []
 
         # Check required columns
-        required_cols = ['item_name', 'current_price', 'cogs', 'quantity_sold']
+        required_cols = ["item_name", "current_price", "cogs", "quantity_sold"]
         if self.require_date:
-            required_cols.append('date')
+            required_cols.append("date")
 
         missing_cols = set(required_cols) - set(df.columns)
         if missing_cols:
@@ -201,7 +207,7 @@ class DataValidator:
                 errors=errors,
                 warnings=warnings,
                 valid_row_count=0,
-                invalid_row_count=len(df)
+                invalid_row_count=len(df),
             )
 
         # Validate each row
@@ -213,14 +219,14 @@ class DataValidator:
                     val = row[col]
                     if pd.isna(val):
                         row_dict[col] = None
-                    elif col == 'quantity_sold':
+                    elif col == "quantity_sold":
                         row_dict[col] = int(val)
-                    elif col in ['current_price', 'cogs']:
+                    elif col in ["current_price", "cogs"]:
                         row_dict[col] = float(val)
-                    elif col == 'date':
+                    elif col == "date":
                         if isinstance(val, str):
                             row_dict[col] = val
-                        elif hasattr(val, 'date'):
+                        elif hasattr(val, "date"):
                             row_dict[col] = val.date()
                         else:
                             row_dict[col] = str(val)
@@ -242,8 +248,8 @@ class DataValidator:
             )
 
         # Check observations per item
-        if 'item_name' in df.columns:
-            item_counts = df['item_name'].value_counts()
+        if "item_name" in df.columns:
+            item_counts = df["item_name"].value_counts()
             low_count_items = item_counts[item_counts < self.min_observations]
             if len(low_count_items) > 0:
                 warnings.append(
@@ -253,8 +259,8 @@ class DataValidator:
                 )
 
         # Check for duplicate entries
-        if 'date' in df.columns:
-            duplicates = df.duplicated(subset=['item_name', 'date'], keep=False)
+        if "date" in df.columns:
+            duplicates = df.duplicated(subset=["item_name", "date"], keep=False)
             if duplicates.any():
                 dup_count = duplicates.sum()
                 warnings.append(
@@ -263,19 +269,19 @@ class DataValidator:
                 )
 
         # Check for negative values
-        for col in ['current_price', 'cogs']:
+        for col in ["current_price", "cogs"]:
             if col in df.columns:
                 neg_count = (df[col] < 0).sum()
                 if neg_count > 0:
-                    errors.append(
-                        f"{neg_count} rows have negative {col} values."
-                    )
+                    errors.append(f"{neg_count} rows have negative {col} values.")
 
         # Check for unreasonable margins
-        if 'current_price' in df.columns and 'cogs' in df.columns:
-            df_clean = df[(df['cogs'] > 0) & (df['current_price'] > 0)]
+        if "current_price" in df.columns and "cogs" in df.columns:
+            df_clean = df[(df["cogs"] > 0) & (df["current_price"] > 0)]
             if len(df_clean) > 0:
-                margins = (df_clean['current_price'] - df_clean['cogs']) / df_clean['cogs']
+                margins = (df_clean["current_price"] - df_clean["cogs"]) / df_clean[
+                    "cogs"
+                ]
                 neg_margin_count = (margins < 0).sum()
                 if neg_margin_count > 0:
                     errors.append(
@@ -284,8 +290,10 @@ class DataValidator:
                     )
 
         # Determine validity (errors are blockers, warnings are not)
-        is_valid = len([e for e in errors if not e.startswith('Row')]) == 0 or \
-                   len(invalid_rows) < len(df) * 0.5  # Allow up to 50% invalid rows
+        is_valid = (
+            len([e for e in errors if not e.startswith("Row")]) == 0
+            or len(invalid_rows) < len(df) * 0.5
+        )  # Allow up to 50% invalid rows
 
         valid_count = len(df) - len(invalid_rows)
 
@@ -294,7 +302,7 @@ class DataValidator:
             errors=errors[:50],  # Limit errors to first 50
             warnings=warnings,
             valid_row_count=valid_count,
-            invalid_row_count=len(invalid_rows)
+            invalid_row_count=len(invalid_rows),
         )
 
     def validate_file_size(self, file_size_bytes: int) -> bool:
@@ -323,22 +331,22 @@ class DataValidator:
         df = df.copy()
 
         # Remove rows with missing required columns
-        required_cols = ['item_name', 'current_price', 'cogs', 'quantity_sold']
+        required_cols = ["item_name", "current_price", "cogs", "quantity_sold"]
         for col in required_cols:
             if col in df.columns:
                 df = df.dropna(subset=[col])
 
         # Remove rows with invalid values
-        if 'current_price' in df.columns:
-            df = df[df['current_price'] > 0]
-        if 'cogs' in df.columns:
-            df = df[df['cogs'] > 0]
-        if 'quantity_sold' in df.columns:
-            df = df[df['quantity_sold'] >= 0]
+        if "current_price" in df.columns:
+            df = df[df["current_price"] > 0]
+        if "cogs" in df.columns:
+            df = df[df["cogs"] > 0]
+        if "quantity_sold" in df.columns:
+            df = df[df["quantity_sold"] >= 0]
 
         # Ensure COGS < price
-        if 'current_price' in df.columns and 'cogs' in df.columns:
-            df = df[df['cogs'] < df['current_price']]
+        if "current_price" in df.columns and "cogs" in df.columns:
+            df = df[df["cogs"] < df["current_price"]]
 
         logger.info(f"Cleaned DataFrame: {len(df)} valid rows")
 

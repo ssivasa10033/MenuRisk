@@ -228,13 +228,15 @@ class ModelRegistry:
 
             data = []
             for v in versions:
-                data.append({
-                    "version": v.version,
-                    "stage": v.current_stage,
-                    "status": v.status,
-                    "creation_timestamp": v.creation_timestamp,
-                    "run_id": v.run_id,
-                })
+                data.append(
+                    {
+                        "version": v.version,
+                        "stage": v.current_stage,
+                        "status": v.status,
+                        "creation_timestamp": v.creation_timestamp,
+                        "run_id": v.run_id,
+                    }
+                )
 
             return pd.DataFrame(data)
 
@@ -259,12 +261,14 @@ class ModelRegistry:
             data = []
             for run_id in run_ids:
                 run = self._client.get_run(run_id)
-                data.append({
-                    "run_id": run_id,
-                    "start_time": run.info.start_time,
-                    **run.data.params,
-                    **run.data.metrics,
-                })
+                data.append(
+                    {
+                        "run_id": run_id,
+                        "start_time": run.info.start_time,
+                        **run.data.params,
+                        **run.data.metrics,
+                    }
+                )
 
             return pd.DataFrame(data)
 
