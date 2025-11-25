@@ -88,15 +88,28 @@ CANADIAN_HOLIDAYS = [
 # ==============================================================================
 
 ML_CONFIG = {
-    'n_estimators': 100,
-    'max_depth': 10,
+    'n_estimators': 300,      # Increased from 100 for better accuracy
+    'max_depth': 15,          # Increased from 10 for capturing complex patterns
     'min_samples_split': 5,
+    'min_samples_leaf': 2,
     'random_state': 42,
-    'test_size': 0.2
+    'test_size': 0.2,
+    'cv_folds': 5            # Time-series cross-validation folds
 }
 
 # Monte Carlo simulation parameters
 MONTE_CARLO_ITERATIONS = 10000
+
+# ==============================================================================
+# PRICE OPTIMIZATION CONSTRAINTS
+# ==============================================================================
+
+OPTIMIZATION_CONSTRAINTS = {
+    'min_margin': 0.10,              # Minimum 10% profit margin
+    'max_price_multiplier': 5.0,     # Max price = 5x COGS
+    'min_price_multiplier': 1.1,     # Min price = 1.1x COGS (covers overhead)
+    'elasticity_test_pct': 0.01      # Test price changes of ±1% for elasticity
+}
 
 # ==============================================================================
 # RECOMMENDATION THRESHOLDS
