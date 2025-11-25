@@ -28,24 +28,34 @@
 
 ## What It Does
 
-**Portfolio Theory Application:**
-Applies the same risk-return framework commonly used in financial analysis
-```
-Sharpe Ratio = (Expected Return - Risk-Free Rate) / Standard Deviation
-```
+MenuRisk is a **demand forecasting and price optimization system** that applies Modern Portfolio Theory to menu analysis.
 
-**Predictive Analytics:**
-Uses ensemble machine learning to forecast 30-day demand with 75-85% accuracy, incorporating:
-- Temporal patterns (seasonality, day-of-week effects)
-- Lag features (historical sales momentum)
-- Rolling statistics (moving averages, trends)
-- Event characteristics (wedding vs. corporate bookings)
+### 1. Demand Forecasting
+Predicts `quantity_sold` at different price points using Random Forest:
+- **Accuracy:** 75-85% variance explained (R² = 0.75-0.85)
+- **Features:** 20+ engineered features (temporal, price, lags, rolling stats)
+- **Validation:** Beats naive baselines by 15-25%
 
-**Actionable Recommendations:**
-Combines quantitative risk metrics with ML predictions to categorize items:
-- **Keep**: High Sharpe ratio (>1.5) + strong demand forecast
-- **Monitor**: Moderate performance (0.8-1.5 Sharpe) or uncertainty
-- **Remove**: Poor risk-adjusted returns (<0.8 Sharpe) + weak outlook
+### 2. Price Optimization
+Finds profit-maximizing prices by modeling demand curves:
+```python
+maximize: profit(price) = demand(price) × (price - cogs)
+subject to: minimum margins, maximum markups
+```
+- **Method:** Bounded scalar optimization using demand forecasts
+- **Output:** Optimal price, expected demand, expected profit
+- **Elasticity:** Estimates price sensitivity for each item
+
+### 3. Risk-Adjusted Performance (Sharpe Ratios)
+Calculates time-series risk metrics for each item:
+```
+Sharpe Ratio = (Mean Daily Return - Risk-Free Rate) / Volatility × √252
+```
+- **Time-Series:** Uses day-to-day profit changes (NOT cross-sectional)
+- **Metrics:** Sharpe ratio, Sortino ratio, VaR, CVaR
+- **Recommendations:** KEEP (Sharpe ≥ 1.5), MONITOR (0.8-1.5), REMOVE (< 0.8)
+
+**📖 See [METHODOLOGY.md](METHODOLOGY.md) for detailed technical documentation.**
 
 ## Technical Stack
 

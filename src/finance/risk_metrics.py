@@ -65,7 +65,13 @@ class PortfolioAnalyzer:
 
         Returns:
             Sharpe ratio value
+
+        Raises:
+            ValueError: If returns array is empty
         """
+        if len(returns) == 0:
+            raise ValueError("Cannot calculate Sharpe ratio with empty returns array")
+
         rf = risk_free_rate if risk_free_rate is not None else self.risk_free_rate
 
         mean_return = np.mean(returns)
@@ -96,6 +102,11 @@ class PortfolioAnalyzer:
 
         df = df.copy()
 
+        # Handle empty DataFrame
+        if len(df) == 0:
+            logger.warning("Empty DataFrame provided")
+            return self._empty_metrics()
+
         # Calculate profit margins
         df["revenue"] = df["current_price"] * df["quantity_sold"]
         df["profit"] = df["revenue"] - (df["cogs"] * df["quantity_sold"])
@@ -103,10 +114,10 @@ class PortfolioAnalyzer:
             df["cogs"] > 0, (df["current_price"] - df["cogs"]) / df["cogs"], 0
         )
 
-        # Get valid returns
-        returns = df["profit_margin"].values
+        # Get valid returns (ensure numeric type first)
+        returns = pd.to_numeric(df["profit_margin"], errors='coerce').values
         returns = returns[~np.isnan(returns)]
-        returns = returns[returns != np.inf]
+        returns = returns[~np.isinf(returns)]
         returns = returns[returns > -1]
 
         if len(returns) == 0:
@@ -328,8 +339,8 @@ class PortfolioAnalyzer:
         skewness = float(stats.skew(clean_returns))
         kurtosis = float(stats.kurtosis(clean_returns))  # Excess kurtosis
 
-        # Determine if normal
-        is_normal = shapiro_p > alpha and jarque_bera_p > alpha
+        # Determine if normal (convert to Python bool to avoid numpy bool type issues)
+        is_normal = bool(shapiro_p > alpha and jarque_bera_p > alpha)
 
         # Generate recommendation
         if is_normal:
