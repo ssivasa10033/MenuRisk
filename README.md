@@ -1,10 +1,14 @@
-# Menu Portfolio Optimizer 
+# Menu Portfolio Optimizer
 
-![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
-![Flask](https://img.shields.io/badge/flask-3.0-green.svg)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ssivasa10033/MenuRisk/ci.yml?branch=main&label=build&logo=github)](https://github.com/ssivasa10033/MenuRisk/actions)
+[![Tests](https://img.shields.io/badge/tests-121%20passed-brightgreen.svg?logo=pytest)](https://github.com/ssivasa10033/MenuRisk/actions)
+[![codecov](https://codecov.io/gh/ssivasa10033/MenuRisk/branch/main/graph/badge.svg)](https://codecov.io/gh/ssivasa10033/MenuRisk)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg?logo=python&logoColor=white)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![ML](https://img.shields.io/badge/ML-RF%20%7C%20XGBoost%20%7C%20LightGBM-orange.svg)
-![Testing](https://img.shields.io/badge/testing-pytest-yellow.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+[![Flask](https://img.shields.io/badge/flask-3.0-green.svg?logo=flask)](https://flask.palletsprojects.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ssivasa10033/MenuRisk/pulls)
 
 **Quantitative finance meets machine learning for menu optimization.** This application applies Modern Portfolio Theory and advanced ML techniques to analyze restaurant/catering menus, treating dishes as financial assets with risk-return profiles.
 

@@ -9,7 +9,7 @@ Institution: Computer Science @ Western University
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple, Any, Union
 
 import numpy as np
 import pandas as pd
@@ -299,7 +299,7 @@ class DemandForecaster:
         self,
         X: np.ndarray,
         return_std: bool = False,
-    ) -> np.ndarray:
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Make predictions with optional standard deviation.
 
@@ -440,9 +440,9 @@ class DemandForecaster:
         }
 
         if include_business_metrics:
-            metrics["test_mape"] = mean_absolute_percentage_error(y_test, predictions)
+            metrics["test_mape"] = mean_absolute_percentage_error(y_test, predictions)  # type: ignore[arg-type]
             metrics["test_directional_accuracy"] = directional_accuracy(
-                y_test, predictions
+                y_test, predictions  # type: ignore[arg-type]
             )
 
         return metrics

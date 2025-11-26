@@ -115,7 +115,7 @@ class PortfolioAnalyzer:
         )
 
         # Get valid returns (ensure numeric type first)
-        returns = pd.to_numeric(df["profit_margin"], errors='coerce').values
+        returns = pd.to_numeric(df["profit_margin"], errors="coerce").values
         returns = returns[~np.isnan(returns)]
         returns = returns[~np.isinf(returns)]
         returns = returns[returns > -1]
@@ -300,7 +300,9 @@ class PortfolioAnalyzer:
             - recommendation: String recommendation based on results
         """
         if len(returns) < 3:
-            logger.warning("Insufficient data for normality testing (need >= 3 samples)")
+            logger.warning(
+                "Insufficient data for normality testing (need >= 3 samples)"
+            )
             return {
                 "shapiro_stat": np.nan,
                 "shapiro_p_value": np.nan,
@@ -345,8 +347,7 @@ class PortfolioAnalyzer:
         # Generate recommendation
         if is_normal:
             recommendation = (
-                "Returns appear normally distributed. "
-                "MPT assumptions are satisfied."
+                "Returns appear normally distributed. " "MPT assumptions are satisfied."
             )
         else:
             if abs(skewness) > 1:

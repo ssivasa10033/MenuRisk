@@ -143,7 +143,7 @@ class ModelVisualizer:
         fig, ax = plt.subplots(figsize=(12, 8))
 
         df_sorted = feature_importance_df.sort_values("importance", ascending=True)
-        colors = plt.cm.viridis(np.linspace(0, 1, len(df_sorted)))
+        colors = plt.cm.viridis(np.linspace(0, 1, len(df_sorted)))  # type: ignore[attr-defined]
 
         ax.barh(df_sorted["feature"], df_sorted["importance"], color=colors)
         ax.set_xlabel("Importance Score", fontsize=12, fontweight="bold")

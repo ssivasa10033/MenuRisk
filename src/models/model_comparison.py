@@ -257,9 +257,7 @@ class ModelComparison:
                 verbose=-1,
             )
         else:
-            logger.warning(
-                "LightGBM not available. Install with: pip install lightgbm"
-            )
+            logger.warning("LightGBM not available. Install with: pip install lightgbm")
 
         # Add naive baselines
         models["naive_last_value"] = NaiveBaseline(method="last_value")
@@ -499,9 +497,9 @@ Baseline Performance:
                 )
 
         summary += "\nAll models beat naive baselines: "
-        best_naive_mae = self.results[
-            self.results["model"].str.startswith("naive")
-        ]["test_mae"].min()
+        best_naive_mae = self.results[self.results["model"].str.startswith("naive")][
+            "test_mae"
+        ].min()
         best_ml_mae = self.results[~self.results["model"].str.startswith("naive")][
             "test_mae"
         ].min()
