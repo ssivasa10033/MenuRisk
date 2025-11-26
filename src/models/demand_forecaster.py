@@ -440,9 +440,9 @@ class DemandForecaster:
         }
 
         if include_business_metrics:
-            metrics["test_mape"] = mean_absolute_percentage_error(y_test, predictions)
+            metrics["test_mape"] = mean_absolute_percentage_error(y_test, predictions)  # type: ignore[arg-type]
             metrics["test_directional_accuracy"] = directional_accuracy(
-                y_test, predictions
+                y_test, predictions  # type: ignore[arg-type]
             )
 
         return metrics
