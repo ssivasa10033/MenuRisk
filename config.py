@@ -97,8 +97,8 @@ ML_CONFIG = {
     'cv_folds': 5            # Time-series cross-validation folds
 }
 
-# Monte Carlo simulation parameters
-MONTE_CARLO_ITERATIONS = 10000
+# NOTE: Monte Carlo simulation for uncertainty quantification is a planned
+# future enhancement for risk modeling and scenario analysis
 
 # ==============================================================================
 # PRICE OPTIMIZATION CONSTRAINTS

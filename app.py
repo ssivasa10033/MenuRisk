@@ -19,6 +19,7 @@ import pandas as pd
 from src.models.optimizer import MenuPriceOptimizer
 from src.data.loader import DataLoader
 from src.visualization.charts import ModelVisualizer
+from config import ML_CONFIG
 
 # Configure logging
 logging.basicConfig(
@@ -81,11 +82,14 @@ def upload_file():
         data = loader.load_csv(filepath)
 
         # Initialize and train model
-        model = MenuPriceOptimizer(
-            n_estimators=100,
-            max_depth=10,
-            random_state=42
-        )
+        # Extract only the parameters that MenuPriceOptimizer.__init__ accepts
+        optimizer_params = {
+            'n_estimators': ML_CONFIG['n_estimators'],
+            'max_depth': ML_CONFIG['max_depth'],
+            'min_samples_split': ML_CONFIG['min_samples_split'],
+            'random_state': ML_CONFIG['random_state']
+        }
+        model = MenuPriceOptimizer(**optimizer_params)
 
         metrics = model.train(data)
         predictions = model.predict(data)
