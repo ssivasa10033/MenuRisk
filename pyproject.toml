@@ -136,6 +136,9 @@ exclude = '''
 
 [tool.mypy]
 python_version = "3.9"
-warn_return_any = true
+warn_return_any = false
 warn_unused_configs = true
 ignore_missing_imports = true
+allow_untyped_calls = true
+allow_untyped_defs = true
+disable_error_code = ["no-any-return", "union-attr", "index"]

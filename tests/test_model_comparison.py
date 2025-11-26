@@ -295,9 +295,7 @@ class TestModelComparison:
         # ML should perform at least as well as naive (with small tolerance)
         # Allow 5% tolerance since on small synthetic data, baselines can be competitive
         tolerance = 0.05 * best_naive_mae
-        assert (
-            best_ml_mae <= best_naive_mae + tolerance
-        ), (
+        assert best_ml_mae <= best_naive_mae + tolerance, (
             f"ML MAE ({best_ml_mae:.4f}) should be <= naive MAE "
             f"({best_naive_mae:.4f}) + tolerance ({tolerance:.4f})"
         )

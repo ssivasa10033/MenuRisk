@@ -9,7 +9,7 @@ Institution: Computer Science @ Western University
 
 import logging
 from datetime import date
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
@@ -214,7 +214,7 @@ class DataValidator:
         for idx, row in df.iterrows():
             try:
                 # Convert row to dict, handling NaN values
-                row_dict = {}
+                row_dict: Dict[str, Any] = {}
                 for col in df.columns:
                     val = row[col]
                     if pd.isna(val):
