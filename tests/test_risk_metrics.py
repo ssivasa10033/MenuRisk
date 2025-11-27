@@ -17,12 +17,14 @@ class TestPortfolioAnalyzer:
     @pytest.fixture
     def sample_data(self):
         """Create sample menu data for testing."""
-        return pd.DataFrame({
-            'item_name': ['Item A', 'Item B', 'Item C'] * 10,
-            'current_price': [10.0, 15.0, 20.0] * 10,
-            'cogs': [5.0, 8.0, 12.0] * 10,
-            'quantity_sold': [100, 80, 60] * 10
-        })
+        return pd.DataFrame(
+            {
+                "item_name": ["Item A", "Item B", "Item C"] * 10,
+                "current_price": [10.0, 15.0, 20.0] * 10,
+                "cogs": [5.0, 8.0, 12.0] * 10,
+                "quantity_sold": [100, 80, 60] * 10,
+            }
+        )
 
     def test_sharpe_ratio_zero_volatility(self, analyzer):
         """Test Sharpe ratio with zero volatility."""
@@ -30,7 +32,7 @@ class TestPortfolioAnalyzer:
         sharpe = analyzer.calculate_sharpe_ratio(returns)
 
         # Zero volatility with positive excess return = infinite Sharpe
-        assert sharpe == float('inf')
+        assert sharpe == float("inf")
 
     def test_calculate_portfolio_metrics(self, analyzer, sample_data):
         """Test portfolio metrics calculation."""
@@ -76,7 +78,7 @@ class TestPortfolioAnalyzer:
         sortino = analyzer.calculate_sortino_ratio(returns)
 
         # Should be infinite when no downside risk
-        assert sortino == float('inf')
+        assert sortino == float("inf")
 
     def test_recommendation_logic(self, analyzer, sample_data):
         """Test recommendation generation logic."""
@@ -87,7 +89,7 @@ class TestPortfolioAnalyzer:
         assert len(recommendations) > 0
 
         # Check that recommendations are valid
-        valid_recommendations = {'keep', 'monitor', 'remove'}
+        valid_recommendations = {"keep", "monitor", "remove"}
         for rec in recommendations.values():
             assert rec in valid_recommendations
 
@@ -190,7 +192,7 @@ class TestEdgeCases:
         sharpe = analyzer.calculate_sharpe_ratio(returns)
 
         # Single value has zero volatility, positive excess return = inf
-        assert sharpe == float('inf')
+        assert sharpe == float("inf")
 
     def test_negative_returns(self, analyzer):
         """Test handling of negative returns."""
