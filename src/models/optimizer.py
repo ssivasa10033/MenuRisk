@@ -446,7 +446,7 @@ class MenuPriceOptimizer:
         # Test normality of portfolio returns
         returns_df = self._risk_metrics.calculate_returns_timeseries(df)
         all_returns = returns_df["margin_return"].dropna().values
-        normality = self._risk_metrics.test_normality(all_returns)
+        normality = self.portfolio_analyzer.test_normality(all_returns)
 
         return {
             "item_metrics": item_metrics,
