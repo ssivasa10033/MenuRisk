@@ -91,10 +91,12 @@ ML_CONFIG = {
     'n_estimators': 300,      # Increased from 100 for better accuracy
     'max_depth': 15,          # Increased from 10 for capturing complex patterns
     'min_samples_split': 5,
-    'min_samples_leaf': 2,
+    'min_samples_leaf': 4,    # Regularization: prevents overfitting on small datasets
+    'max_features': 'sqrt',   # Feature randomness for diversity
     'random_state': 42,
     'test_size': 0.2,
-    'cv_folds': 5            # Time-series cross-validation folds
+    'cv_folds': 5,            # Time-series cross-validation folds
+    'use_temporal_split': True  # Use time-based split for time-series data
 }
 
 # NOTE: Monte Carlo simulation for uncertainty quantification is a planned
