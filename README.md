@@ -1,7 +1,7 @@
 # Menu Portfolio Optimizer
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ssivasa10033/MenuRisk/ci.yml?branch=main&label=build&logo=github)](https://github.com/ssivasa10033/MenuRisk/actions)
-[![Tests](https://img.shields.io/badge/tests-121%20passed-brightgreen.svg?logo=pytest)](https://github.com/ssivasa10033/MenuRisk/actions)
+[![Tests](https://img.shields.io/badge/tests-139%20passed-brightgreen.svg?logo=pytest)](https://github.com/ssivasa10033/MenuRisk/actions)
 [![codecov](https://codecov.io/gh/ssivasa10033/MenuRisk/branch/main/graph/badge.svg)](https://codecov.io/gh/ssivasa10033/MenuRisk)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue.svg?logo=python&logoColor=white)](https://www.python.org)
@@ -37,7 +37,7 @@ MenuRisk is a **demand forecasting and price optimization system** that applies 
 ### 1. Demand Forecasting
 Predicts `quantity_sold` at different price points using Random Forest:
 - **Accuracy:** 75-85% variance explained (R² = 0.75-0.85)
-- **Features:** 20+ engineered features (temporal, price, lags, rolling stats)
+- **Features:** 15+ engineered features (temporal, price, lags, rolling stats)
 - **Validation:** Beats naive baselines by 15-25%
 
 ### 2. Price Optimization

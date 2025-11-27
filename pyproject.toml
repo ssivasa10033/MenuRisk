@@ -32,7 +32,6 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Office/Business :: Financial",
 ]
@@ -78,10 +77,10 @@ ml-extras = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/menu-portfolio-optimizer"
-Documentation = "https://github.com/yourusername/menu-portfolio-optimizer#readme"
-Repository = "https://github.com/yourusername/menu-portfolio-optimizer"
-Issues = "https://github.com/yourusername/menu-portfolio-optimizer/issues"
+Homepage = "https://github.com/ssivasa10033/MenuRisk"
+Documentation = "https://github.com/ssivasa10033/MenuRisk#readme"
+Repository = "https://github.com/ssivasa10033/MenuRisk"
+Issues = "https://github.com/ssivasa10033/MenuRisk/issues"
 
 [project.scripts]
 menu-optimizer = "app:app.run"

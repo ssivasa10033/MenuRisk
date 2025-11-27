@@ -319,7 +319,7 @@ async def get_portfolio_metrics():
         )
 
     try:
-        from src.finance.risk_metrics_v2 import PortfolioMetrics, RiskMetrics
+        from src.finance.risk_metrics import PortfolioMetrics, RiskMetrics
 
         df = state.last_data.copy()
 
@@ -360,7 +360,7 @@ async def get_recommendations():
         )
 
     try:
-        from src.finance.risk_metrics_v2 import RiskMetrics
+        from src.finance.risk_metrics import RiskMetrics
 
         df = state.last_data.copy()
 
@@ -446,7 +446,7 @@ async def get_sample_data():
     from src.data.loader import DataLoader
 
     loader = DataLoader()
-    sample_df = loader.generate_sample_data(n_items=10, n_days=90)
+    sample_df = loader.generate_sample_data(n_samples=200, seed=42)
 
     return {
         "message": "Sample data generated",
