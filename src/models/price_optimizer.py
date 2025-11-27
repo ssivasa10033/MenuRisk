@@ -8,12 +8,12 @@ Author: Seon Sivasathan
 Institution: Computer Science @ Western University
 """
 
+import logging
+from typing import Any, Dict, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from scipy.optimize import minimize_scalar, differential_evolution
-from typing import Dict, Tuple, Optional, Any
-import logging
-from datetime import datetime
+from scipy.optimize import minimize_scalar
 
 logger = logging.getLogger(__name__)
 

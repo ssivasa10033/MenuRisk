@@ -24,9 +24,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from src.data.preprocessor import DataPreprocessor, InsufficientDataError
 
-# Import both old and new risk metrics for compatibility
-from src.finance.risk_metrics import PortfolioAnalyzer as LegacyPortfolioAnalyzer
-from src.finance.risk_metrics_v2 import (
+# Import risk metrics
+from src.finance.risk_metrics import (
     RiskMetrics,
     PortfolioMetrics,
     PortfolioAnalyzer,
@@ -37,11 +36,13 @@ logger = logging.getLogger(__name__)
 
 class ModelError(Exception):
     """Base exception for model errors."""
+
     pass
 
 
 class ModelNotTrainedError(ModelError):
     """Raised when trying to predict without training."""
+
     pass
 
 
@@ -97,11 +98,11 @@ class MenuPriceOptimizer:
         )
 
         self.preprocessor = DataPreprocessor()
-        
+
         # Use the improved risk metrics
         self._risk_metrics = RiskMetrics(risk_free_rate=risk_free_rate)
         self._portfolio_metrics = PortfolioMetrics(self._risk_metrics)
-        
+
         # Keep legacy analyzer for backward compatibility
         self.portfolio_analyzer = PortfolioAnalyzer(risk_free_rate=risk_free_rate)
 
@@ -141,14 +142,16 @@ class MenuPriceOptimizer:
         if "date" in df.columns:
             # Create index mapping based on date sort
             sorted_indices = df.sort_values("date").index
-            
+
             # Map original indices to sorted positions
             idx_mapping = {orig: pos for pos, orig in enumerate(sorted_indices)}
-            
+
             # Get sorted positions for our current data
             current_indices = df.index[:n_samples]
-            sorted_positions = [idx_mapping.get(idx, i) for i, idx in enumerate(current_indices)]
-            
+            sorted_positions = [
+                idx_mapping.get(idx, i) for i, idx in enumerate(current_indices)
+            ]
+
             # Sort everything by date
             sort_order = np.argsort(sorted_positions)
             X = X[sort_order]
@@ -205,6 +208,7 @@ class MenuPriceOptimizer:
         else:
             # Fall back to random split if no date column
             from sklearn.model_selection import train_test_split
+
             logger.info("Using random train-test split (no date column found)")
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=test_size, random_state=self._random_state
@@ -237,7 +241,7 @@ class MenuPriceOptimizer:
             cv = TimeSeriesSplit(n_splits=5)
         else:
             cv = 5  # Standard K-Fold
-        
+
         cv_scores = cross_val_score(self.model, X_train, y_train, cv=cv, scoring="r2")
 
         # Calculate overfitting gap

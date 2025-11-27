@@ -613,9 +613,9 @@ class PortfolioAnalyzer:
 
         if volatility == 0:
             if mean_return > rf:
-                return float('inf')
+                return float("inf")
             elif mean_return < rf:
-                return float('-inf')
+                return float("-inf")
             return 0.0
 
         sharpe = (mean_return - rf) / volatility
@@ -761,9 +761,7 @@ class PortfolioAnalyzer:
 
         return vol_range, return_range
 
-    def test_normality(
-        self, returns: np.ndarray, alpha: float = 0.05
-    ) -> Dict:
+    def test_normality(self, returns: np.ndarray, alpha: float = 0.05) -> Dict:
         """Test returns for normality."""
         from scipy import stats
 

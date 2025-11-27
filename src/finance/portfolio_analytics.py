@@ -374,7 +374,7 @@ class PortfolioAnalyzer:
         Returns:
             DataFrame with risk metrics for each item, sorted by Sharpe ratio
         """
-        logger.info(f"Analyzing menu portfolio")
+        logger.info("Analyzing menu portfolio")
 
         if "date" not in df.columns:
             raise ValueError(
