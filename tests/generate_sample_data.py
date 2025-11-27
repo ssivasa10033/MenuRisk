@@ -307,5 +307,5 @@ if __name__ == "__main__":
     # Generate and save sample data
     df = save_sample_data("data/sample_menu_data_timeseries.csv")
 
-    print(f"\n✅ Generated {len(df)} records for {df['item_name'].nunique()} items")
+    print(f"\n[OK] Generated {len(df)} records for {df['item_name'].nunique()} items")
     print(f"Date range: {df['date'].min()} to {df['date'].max()}")

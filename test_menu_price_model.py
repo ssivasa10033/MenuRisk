@@ -31,7 +31,7 @@ from menu_price_model import (
     InvalidDataError,
     ModelNotTrainedError
 )
-import config
+import project_config as config
 
 
 class TestMenuPriceOptimizer(unittest.TestCase):
@@ -473,9 +473,9 @@ def run_tests():
     print(f"Success rate: {(result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100:.1f}%")
     
     if result.wasSuccessful():
-        print("\n✓ All tests passed!")
+        print("\n[PASS] All tests passed!")
     else:
-        print("\n✗ Some tests failed. See details above.")
+        print("\n[FAIL] Some tests failed. See details above.")
     
     return result.wasSuccessful()
 

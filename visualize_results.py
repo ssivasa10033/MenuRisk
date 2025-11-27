@@ -16,7 +16,7 @@ try:
     import matplotlib.pyplot as plt
     import seaborn as sns
     from menu_price_model import MenuPriceOptimizer
-    import config
+    import project_config as config
 except ImportError as e:
     print("=" * 60)
     print("ERROR: Missing required dependencies!")
@@ -140,7 +140,7 @@ class ModelVisualizer:
         MAE: {metrics['mae']:.4f}
         RMSE: {metrics['rmse']:.4f}
         
-        Status: {'✓ PASS (>80%)' if metrics['r2_score'] > 0.8 else '✗ FAIL (<80%)'}
+        Status: {'PASS (>80%)' if metrics['r2_score'] > 0.8 else 'FAIL (<80%)'}
         """
         axes[1, 1].text(0.1, 0.5, summary_text, fontsize=11,
                        verticalalignment='center', family='monospace',
@@ -272,9 +272,9 @@ class ModelVisualizer:
         Sharpe Ratio: {portfolio_metrics['sharpe_ratio']:.4f}
         
         Recommendations:
-        • Keep: {list(recs.values()).count('keep')}
-        • Monitor: {list(recs.values()).count('monitor')}
-        • Remove: {list(recs.values()).count('remove')}
+        - Keep: {list(recs.values()).count('keep')}
+        - Monitor: {list(recs.values()).count('monitor')}
+        - Remove: {list(recs.values()).count('remove')}
         """
         axes[1, 1].text(0.1, 0.5, summary_text, fontsize=11,
                        verticalalignment='center', family='monospace',
@@ -377,20 +377,20 @@ class ModelVisualizer:
         # Create visualizations
         print("\nCreating visualizations...")
         self.plot_model_performance(metrics)
-        print("  ✓ Model performance metrics")
-        
+        print("  [+] Model performance metrics")
+
         if model.feature_importance_ is not None:
             self.plot_feature_importance(model.feature_importance_)
-            print("  ✓ Feature importance")
-        
+            print("  [+] Feature importance")
+
         self.plot_predictions_vs_actual(model, test_data)
-        print("  ✓ Predictions vs actual")
-        
+        print("  [+] Predictions vs actual")
+
         self.plot_portfolio_metrics(portfolio_metrics)
-        print("  ✓ Portfolio metrics")
-        
+        print("  [+] Portfolio metrics")
+
         self.plot_category_analysis(test_data, predictions)
-        print("  ✓ Category analysis")
+        print("  [+] Category analysis")
         
         print("\n" + "=" * 60)
         print("All visualizations saved to:", self.output_dir)

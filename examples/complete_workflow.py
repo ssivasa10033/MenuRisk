@@ -32,7 +32,7 @@ from src.data.feature_engineer import TimeSeriesFeatureEngineer
 from src.models.demand_forecaster import DemandForecaster
 from src.models.price_optimizer import PriceOptimizer
 from src.finance.portfolio_analytics import PortfolioAnalyzer
-from config import RISK_FREE_RATE, OPTIMIZATION_CONSTRAINTS, ML_CONFIG
+from project_config import RISK_FREE_RATE, OPTIMIZATION_CONSTRAINTS, ML_CONFIG
 
 # Configure logging
 logging.basicConfig(
@@ -68,7 +68,7 @@ def main():
         seed=42
     )
 
-    print(f"✅ Loaded {len(df):,} records for {df['item_name'].nunique()} items")
+    print(f"[OK] Loaded {len(df):,} records for {df['item_name'].nunique()} items")
     print(f"   Date range: {df['date'].min().date()} to {df['date'].max().date()}")
     print(f"   Avg daily sales: {df.groupby('date')['quantity_sold'].sum().mean():.1f} units")
 
@@ -124,7 +124,7 @@ def main():
         cv_splits=ML_CONFIG['cv_folds']
     )
 
-    print(f"\n✅ Training Complete!")
+    print(f"\n[OK] Training Complete!")
     print(f"   R² Score: {metrics['r2_score']:.4f}")
     print(f"   MAE: {metrics['mae']:.2f} units")
     print(f"   RMSE: {metrics['rmse']:.2f} units")
@@ -152,7 +152,7 @@ def main():
 
     risk_metrics_df = portfolio_analyzer.analyze_menu(df)
 
-    print(f"✅ Portfolio Analysis Complete for {len(risk_metrics_df)} items\n")
+    print(f"[OK] Portfolio Analysis Complete for {len(risk_metrics_df)} items\n")
 
     # Display top performers
     print("📈 Top 5 Items by Sharpe Ratio:")
@@ -184,7 +184,7 @@ def main():
         max_price_multiplier=OPTIMIZATION_CONSTRAINTS['max_price_multiplier']
     )
 
-    print(f"✅ Price Optimization Complete\n")
+    print(f"[OK] Price Optimization Complete\n")
 
     # Display top opportunities by profit improvement
     print("💰 Top 5 Price Optimization Opportunities:")
@@ -228,7 +228,7 @@ def main():
 
         if len(items_in_category) > 0:
             for idx, item in items_in_category.head(3).iterrows():
-                print(f"  • {item['item_name']}")
+                print(f"  - {item['item_name']}")
                 print(f"    Sharpe: {item['sharpe_ratio']:5.2f} | "
                       f"Optimal Price: ${item['optimal_price']:6.2f} | "
                       f"Expected Profit: ${item['expected_profit']:7.2f}/day")
@@ -243,10 +243,10 @@ def main():
     final_recommendations.to_csv('data/optimization_results.csv', index=False)
     risk_metrics_df.to_csv('data/risk_metrics.csv', index=False)
 
-    print("✅ Results saved:")
-    print("   • data/optimization_results.csv")
-    print("   • data/risk_metrics.csv")
-    print("   • data/workflow_sample_data.csv")
+    print("[SAVED] Results saved:")
+    print("   - data/optimization_results.csv")
+    print("   - data/risk_metrics.csv")
+    print("   - data/workflow_sample_data.csv")
 
     # Summary statistics
     print_section("Summary Statistics")
@@ -276,7 +276,7 @@ def main():
     print(f"   High performers (Sharpe ≥ 1.5): {high_sharpe} items")
     print(f"   Low performers (Sharpe < 0.8): {low_sharpe} items")
 
-    print_section("✅ Workflow Complete!")
+    print_section("[OK] Workflow Complete!")
 
     print("\nNext Steps:")
     print("1. Review optimization_results.csv for detailed recommendations")

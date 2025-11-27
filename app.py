@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 from src.models.optimizer import MenuPriceOptimizer
 from src.data.loader import DataLoader
 from src.visualization.charts import ModelVisualizer
-from config import ML_CONFIG  # type: ignore[attr-defined]
+from project_config import ML_CONFIG
 
 # Configure logging
 logging.basicConfig(

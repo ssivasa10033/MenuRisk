@@ -332,8 +332,8 @@ if __name__ == "__main__":
     output_path = "data/canadian_catering_sample.csv"
     df.to_csv(output_path, index=False)
 
-    print(f"\n✓ Generated {len(df):,} rows of realistic sales data")
-    print(f"✓ Saved to: {output_path}")
+    print(f"\n[OK] Generated {len(df):,} rows of realistic sales data")
+    print(f"[OK] Saved to: {output_path}")
     print("\nData Summary:")
     print(f"  Date range: {df['date'].min()} to {df['date'].max()}")
     print(f"  Unique items: {df['item_name'].nunique()}")

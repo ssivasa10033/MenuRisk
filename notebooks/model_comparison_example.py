@@ -121,7 +121,7 @@ best_baseline_mae = naive_results["test_mae"].min()
 best_ml_mae = ml_results["test_mae"].min()
 improvement = ((best_baseline_mae - best_ml_mae) / best_baseline_mae) * 100
 
-print(f"\n✓ Best ML model improves over best baseline by {improvement:.1f}%")
+print(f"\n[OK] Best ML model improves over best baseline by {improvement:.1f}%")
 
 # %% Summary Report
 print("\n" + "=" * 60)
@@ -135,7 +135,7 @@ print("=" * 60)
 
 # Plot comparison
 comparison.plot_comparison(save_path="results/model_comparison.png")
-print("\n✓ Saved comparison plot to results/model_comparison.png")
+print("\n[OK] Saved comparison plot to results/model_comparison.png")
 
 # %% Per-Item Performance Analysis
 print("\n" + "=" * 60)
@@ -225,7 +225,7 @@ if importance is not None:
     plt.title("Top 15 Feature Importances")
     plt.tight_layout()
     plt.savefig("results/feature_importance.png", dpi=300, bbox_inches="tight")
-    print("\n✓ Saved feature importance plot to results/feature_importance.png")
+    print("\n[OK] Saved feature importance plot to results/feature_importance.png")
 
 # %% Prediction Intervals
 print("\n" + "=" * 60)
@@ -260,15 +260,15 @@ print("RECOMMENDATIONS")
 print("=" * 60)
 
 print("\nBased on the model comparison:")
-print(f"1. ✓ Best performing model: {best_name}")
-print(f"2. ✓ Achieves {improvement:.1f}% improvement over naive baseline")
-print(f"3. ✓ Test MAPE: {best_metrics['test_mape']:.2f}% (business-friendly metric)")
+print(f"1. [OK] Best performing model: {best_name}")
+print(f"2. [OK] Achieves {improvement:.1f}% improvement over naive baseline")
+print(f"3. [OK] Test MAPE: {best_metrics['test_mape']:.2f}% (business-friendly metric)")
 print(
-    f"4. ✓ Directional Accuracy: {best_metrics['test_directional_accuracy']:.2f}%"
+    f"4. [OK] Directional Accuracy: {best_metrics['test_directional_accuracy']:.2f}%"
 )
 
 if best_metrics["overfitting_gap"] < 0.1:
-    print("5. ✓ Low overfitting risk (train-test gap < 0.1)")
+    print("5. [OK] Low overfitting risk (train-test gap < 0.1)")
 else:
     print(
         f"5. ⚠ Potential overfitting (train-test gap: {best_metrics['overfitting_gap']:.4f})"

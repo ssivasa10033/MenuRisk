@@ -20,7 +20,7 @@ from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
 
-import config
+import project_config as config
 
 # Configure logging
 logging.basicConfig(
@@ -448,13 +448,14 @@ class MenuPriceOptimizer:
         logger.debug("Calculating portfolio metrics")
         
         try:
-            # Calculate profit margins
+            # Calculate profit margins (using revenue-based definition for consistency)
             df = df.copy()
             df['revenue'] = df['current_price'] * df['quantity_sold']
-            df['profit'] = df['revenue'] - (df['cogs'] * df['quantity_sold'])
+            df['total_cogs'] = df['cogs'] * df['quantity_sold']
+            df['profit'] = df['revenue'] - df['total_cogs']
             df['profit_margin'] = np.where(
-                df['cogs'] > 0,
-                (df['current_price'] - df['cogs']) / df['cogs'],
+                df['revenue'] > 0,
+                df['profit'] / df['revenue'],
                 0
             )
             
@@ -485,23 +486,30 @@ class MenuPriceOptimizer:
             logger.info(f"Portfolio metrics - Return: {mean_return:.4f}, "
                        f"Volatility: {volatility:.4f}, Sharpe: {sharpe_ratio:.4f}")
             
-            # Generate recommendations per item
+            # Generate recommendations per item using CORRECT per-item volatility
             recommendations = {}
-            for idx, row in df.iterrows():
-                item_name = row.get('item_name', f'item_{idx}')
-                item_return = row['profit_margin']
-                
-                # Handle invalid returns
-                if np.isnan(item_return) or item_return == np.inf or item_return < -1:
-                    recommendations[item_name] = 'remove'
+            for item_name in df['item_name'].unique():
+                item_df = df[df['item_name'] == item_name]
+                item_returns = item_df['profit_margin'].values
+                item_returns = item_returns[~np.isnan(item_returns)]
+                item_returns = item_returns[item_returns != np.inf]
+                item_returns = item_returns[item_returns > -1]
+
+                # Need at least 2 observations to calculate volatility
+                if len(item_returns) < 2:
+                    recommendations[item_name] = 'monitor'
                     continue
-                
-                # Calculate item Sharpe ratio using portfolio volatility
-                if volatility > 0:
-                    item_sharpe = (item_return - risk_free_rate) / volatility
+
+                item_mean = np.mean(item_returns)
+                item_vol = np.std(item_returns, ddof=1)
+
+                # Calculate item Sharpe ratio using ITEM volatility (not portfolio!)
+                if item_vol > 0:
+                    item_sharpe = (item_mean - risk_free_rate) / item_vol
                 else:
-                    item_sharpe = item_return - risk_free_rate
-                
+                    # Zero volatility case
+                    item_sharpe = item_mean - risk_free_rate
+
                 # Apply recommendation thresholds from config
                 if item_sharpe >= config.RECOMMENDATION_THRESHOLDS['keep_sharpe']:
                     recommendations[item_name] = 'keep'
