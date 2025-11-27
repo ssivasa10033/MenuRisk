@@ -503,6 +503,6 @@ Baseline Performance:
         best_ml_mae = self.results[~self.results["model"].str.startswith("naive")][
             "test_mae"
         ].min()
-        summary += "✓ Yes" if best_ml_mae < best_naive_mae else "✗ No"
+        summary += "[OK] Yes" if best_ml_mae < best_naive_mae else "[X] No"
 
         return summary

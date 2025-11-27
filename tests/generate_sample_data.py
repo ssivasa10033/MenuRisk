@@ -12,11 +12,10 @@ Author: Seon Sivasathan
 Institution: Computer Science @ Western University
 """
 
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-from typing import Optional
 import logging
+
+import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +234,6 @@ def generate_test_data_with_events(
 
     # Add random events
     np.random.seed(seed)
-    event_types = ["wedding", "corporate", "birthday", "holiday", "none"]
 
     # Most days have no events
     df["event_type"] = "none"
@@ -307,5 +305,5 @@ if __name__ == "__main__":
     # Generate and save sample data
     df = save_sample_data("data/sample_menu_data_timeseries.csv")
 
-    print(f"\n✅ Generated {len(df)} records for {df['item_name'].nunique()} items")
+    print(f"\n[OK] Generated {len(df)} records for {df['item_name'].nunique()} items")
     print(f"Date range: {df['date'].min()} to {df['date'].max()}")
