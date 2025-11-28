@@ -59,7 +59,7 @@ Sharpe Ratio = (Mean Daily Return - Risk-Free Rate) / Volatility × √252
 - **Metrics:** Sharpe ratio, Sortino ratio, VaR, CVaR
 - **Recommendations:** KEEP (Sharpe ≥ 1.5), MONITOR (0.8-1.5), REMOVE (< 0.8)
 
-**📖 See [METHODOLOGY.md](METHODOLOGY.md) for detailed technical documentation.**
+**See [METHODOLOGY.md](METHODOLOGY.md) for detailed technical documentation.**
 
 ## Technical Stack
 

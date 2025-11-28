@@ -163,9 +163,7 @@ if "item_name" in df.columns:
     print(per_item.head(5)[["item_name", "mae", "mape", "r2"]].to_string(index=False))
 
     print("\nTop 5 Worst Predicted Items:")
-    print(
-        per_item.tail(5)[["item_name", "mae", "mape", "r2"]].to_string(index=False)
-    )
+    print(per_item.tail(5)[["item_name", "mae", "mape", "r2"]].to_string(index=False))
 
 # %% Financial Risk Analysis
 print("\n" + "=" * 60)
@@ -263,16 +261,13 @@ print("\nBased on the model comparison:")
 print(f"1. [OK] Best performing model: {best_name}")
 print(f"2. [OK] Achieves {improvement:.1f}% improvement over naive baseline")
 print(f"3. [OK] Test MAPE: {best_metrics['test_mape']:.2f}% (business-friendly metric)")
-print(
-    f"4. [OK] Directional Accuracy: {best_metrics['test_directional_accuracy']:.2f}%"
-)
+print(f"4. [OK] Directional Accuracy: {best_metrics['test_directional_accuracy']:.2f}%")
 
 if best_metrics["overfitting_gap"] < 0.1:
     print("5. [OK] Low overfitting risk (train-test gap < 0.1)")
 else:
-    print(
-        f"5. ⚠ Potential overfitting (train-test gap: {best_metrics['overfitting_gap']:.4f})"
-    )
+    gap = best_metrics['overfitting_gap']
+    print(f"5. [WARNING] Potential overfitting (train-test gap: {gap:.4f})")
 
 print("\nNext Steps:")
 print("- Use this model for production forecasting")
